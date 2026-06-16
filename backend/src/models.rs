@@ -301,6 +301,161 @@ pub struct CreateDrumRequest {
     pub notes: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EthnicDrumProfile {
+    pub drum_id: String,
+    pub name: String,
+    pub ethnic_group: String,
+    pub origin_region: String,
+    pub estimated_era: String,
+    pub diameter_cm: f64,
+    pub height_cm: f64,
+    pub mass_kg: f64,
+    pub alloy: AlloyComposition,
+    pub thickness_profile: String,
+    pub avg_thickness_mm: f64,
+    pub cultural_significance: String,
+    pub traditional_uses: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TimpaniDrumProfile {
+    pub name: String,
+    pub diameter_inches: f64,
+    pub diameter_cm: f64,
+    pub fundamental_freq_hz: f64,
+    pub freq_range_hz: (f64, f64),
+    pub material: String,
+    pub tension_pascals: f64,
+    pub damping_ratio: f64,
+    pub harmonic_structure: Vec<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EthnicAcousticComparison {
+    pub drums: Vec<EthnicDrumProfile>,
+    pub comparison_metrics: EthnicComparisonMetrics,
+    pub frequency_spectra: Vec<(String, Vec<SpectrumBin>)>,
+    pub vibration_modes_comparison: Vec<(String, Vec<VibrationMode>)>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EthnicComparisonMetrics {
+    pub fundamental_freqs: Vec<(String, f64)>,
+    pub sound_quality_scores: Vec<(String, f64)>,
+    pub radiated_powers: Vec<(String, f64)>,
+    pub harmonic_series: Vec<(String, Vec<f64>)>,
+    pub decay_times_s: Vec<(String, f64)>,
+    pub brightness: Vec<(String, f64)>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrossEraComparison {
+    pub ancient_drum: EthnicDrumProfile,
+    pub modern_drum: TimpaniDrumProfile,
+    pub metrics_comparison: CrossEraMetrics,
+    pub ancient_spectrum: Vec<SpectrumBin>,
+    pub modern_spectrum: Vec<SpectrumBin>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrossEraMetrics {
+    pub ancient_fundamental_hz: f64,
+    pub modern_fundamental_hz: f64,
+    pub ancient_harmonic_ratios: Vec<f64>,
+    pub modern_harmonic_ratios: Vec<f64>,
+    pub ancient_decay_s: f64,
+    pub modern_decay_s: f64,
+    pub ancient_brightness: f64,
+    pub modern_brightness: f64,
+    pub ancient_radiated_power_w: f64,
+    pub modern_radiated_power_w: f64,
+    pub pitch_tunability: String,
+    pub cultural_context: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RitualDrumPlacement {
+    pub drum_id: String,
+    pub position_x_m: f64,
+    pub position_y_m: f64,
+    pub position_z_m: f64,
+    pub relative_volume: f64,
+    pub strike_phase_offset_s: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RitualSoundFieldRequest {
+    pub drum_placements: Vec<RitualDrumPlacement>,
+    pub observer_x_m: Option<f64>,
+    pub observer_y_m: Option<f64>,
+    pub observer_z_m: Option<f64>,
+    pub field_radius_m: Option<f64>,
+    pub grid_resolution: Option<usize>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RitualSoundFieldResult {
+    pub sound_field: Vec<SoundFieldPoint>,
+    pub observer_spl_db: f64,
+    pub total_radiated_power_w: f64,
+    pub drum_count: usize,
+    pub temporal_envelope: Vec<(f64, f64)>,
+    pub ritual_scene: RitualSceneInfo,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RitualSceneInfo {
+    pub scene_type: String,
+    pub description: String,
+    pub historical_reference: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VirtualTapRequest {
+    pub drum_id: String,
+    pub x_frac: f64,
+    pub y_frac: f64,
+    pub strike_force: f64,
+    pub striker_type: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VirtualTapResult {
+    pub spectrum: Vec<SpectrumBin>,
+    pub fundamental_freq_hz: f64,
+    pub harmonics: Vec<(f64, f64)>,
+    pub amplitude_envelope: Vec<(f64, f64)>,
+    pub decay_time_s: f64,
+    pub brightness: f64,
+    pub timbre_character: String,
+    pub zone_name: String,
+    pub web_audio_params: WebAudioParams,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WebAudioParams {
+    pub base_freq: f64,
+    pub harmonic_gains: Vec<f64>,
+    pub attack_s: f64,
+    pub decay_s: f64,
+    pub sustain_level: f64,
+    pub release_s: f64,
+    pub filter_cutoff_hz: f64,
+    pub filter_q: f64,
+    pub overall_gain: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EthnicDrumLibraryEntry {
+    pub drum_id: String,
+    pub name: String,
+    pub ethnic_group: String,
+    pub diameter_cm: f64,
+    pub fundamental_hz: f64,
+    pub cultural_tag: String,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiResponse<T: Serialize> {
     pub success: bool,

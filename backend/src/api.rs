@@ -11,6 +11,7 @@ use axum::{
     Json,
 };
 use futures::{sink::SinkExt, stream::StreamExt};
+use serde::Deserialize;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{debug, error, info, warn};
 use uuid::Uuid;
@@ -418,5 +419,102 @@ pub async fn get_wall_thickness(
             Json(ApiResponse::ok(formatted))
         }
         Err(e) => Json(ApiResponse::err(&format!("Database error: {}", e))),
+    }
+}
+
+pub async fn get_ethnic_drum_library(
+    State(state): State<AppState>,
+) -> Json<ApiResponse<Vec<EthnicDrumLibraryEntry>>> {
+    let result = state.acoustic_experience.get_ethnic_drum_library();
+    app_metrics::inc_http_request("GET", "/api/experience/ethnic-library", 200);
+    Json(ApiResponse::ok(result))
+}
+
+pub async fn get_ethnic_drum_profile(
+    State(state): State<AppState>,
+    Path(id): Path<String>,
+) -> Json<ApiResponse<EthnicDrumProfile>> {
+    match state.acoustic_experience.get_ethnic_drum_profile(&id) {
+        Some(profile) => {
+            app_metrics::inc_http_request("GET", "/api/experience/ethnic-drum/:id", 200);
+            Json(ApiResponse::ok(profile))
+        }
+        None => {
+            app_metrics::inc_http_request("GET", "/api/experience/ethnic-drum/:id", 404);
+            Json(ApiResponse::err("Ethnic drum profile not found"))
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EthnicCompareRequest {
+    pub drum_ids: Vec<String>,
+}
+
+pub async fn compare_ethnic_drums(
+    State(state): State<AppState>,
+    Json(req): Json<EthnicCompareRequest>,
+) -> Json<ApiResponse<EthnicAcousticComparison>> {
+    let start = std::time::Instant::now();
+    let result = state.acoustic_experience.compare_ethnic_drums(req.drum_ids);
+    let elapsed = start.elapsed().as_secs_f64();
+    app_metrics::inc_http_request("POST", "/api/experience/ethnic-compare", 200);
+    app_metrics::record_http_duration("POST", "/api/experience/ethnic-compare", elapsed);
+    Json(ApiResponse::ok(result))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CrossEraCompareRequest {
+    pub drum_id: String,
+    pub timpani_size_inches: Option<f64>,
+}
+
+pub async fn cross_era_comparison(
+    State(state): State<AppState>,
+    Json(req): Json<CrossEraCompareRequest>,
+) -> Json<ApiResponse<CrossEraComparison>> {
+    let start = std::time::Instant::now();
+    match state.acoustic_experience.cross_era_comparison(&req.drum_id, req.timpani_size_inches) {
+        Some(result) => {
+            let elapsed = start.elapsed().as_secs_f64();
+            app_metrics::inc_http_request("POST", "/api/experience/cross-era", 200);
+            app_metrics::record_http_duration("POST", "/api/experience/cross-era", elapsed);
+            Json(ApiResponse::ok(result))
+        }
+        None => {
+            app_metrics::inc_http_request("POST", "/api/experience/cross-era", 404);
+            Json(ApiResponse::err("Drum not found for cross-era comparison"))
+        }
+    }
+}
+
+pub async fn ritual_sound_field(
+    State(state): State<AppState>,
+    Json(req): Json<RitualSoundFieldRequest>,
+) -> Json<ApiResponse<RitualSoundFieldResult>> {
+    let start = std::time::Instant::now();
+    let result = state.acoustic_experience.ritual_sound_field(req);
+    let elapsed = start.elapsed().as_secs_f64();
+    app_metrics::inc_http_request("POST", "/api/experience/ritual-soundfield", 200);
+    app_metrics::record_http_duration("POST", "/api/experience/ritual-soundfield", elapsed);
+    Json(ApiResponse::ok(result))
+}
+
+pub async fn virtual_tap(
+    State(state): State<AppState>,
+    Json(req): Json<VirtualTapRequest>,
+) -> Json<ApiResponse<VirtualTapResult>> {
+    let start = std::time::Instant::now();
+    match state.acoustic_experience.virtual_tap(req) {
+        Some(result) => {
+            let elapsed = start.elapsed().as_secs_f64();
+            app_metrics::inc_http_request("POST", "/api/experience/virtual-tap", 200);
+            app_metrics::record_http_duration("POST", "/api/experience/virtual-tap", elapsed);
+            Json(ApiResponse::ok(result))
+        }
+        None => {
+            app_metrics::inc_http_request("POST", "/api/experience/virtual-tap", 404);
+            Json(ApiResponse::err("Drum not found for virtual tap"))
+        }
     }
 }

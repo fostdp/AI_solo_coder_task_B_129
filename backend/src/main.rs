@@ -3,8 +3,9 @@ use axum::{
     Router,
     response::IntoResponse,
     body::Body,
-    http::{HeaderMap, StatusCode},
+    http::{HeaderMap, StatusCode, Method},
 };
+use tower_http::cors::{CorsLayer, Any};
 use std::sync::Arc;
 use parking_lot::RwLock;
 use tokio::sync::mpsc;
@@ -19,6 +20,7 @@ pub mod api;
 pub mod dtu_receiver;
 pub mod casting_simulator;
 pub mod acoustic_analyzer;
+pub mod acoustic_experience;
 pub mod alarm_mqtt;
 pub mod metrics;
 
@@ -28,6 +30,7 @@ use mqtt_client::MqttClient;
 use dtu_receiver::DtuEvent;
 use casting_simulator::{CastingCommand, CastingSimulatorService};
 use acoustic_analyzer::{AcousticsCommand, AcousticAnalyzerService};
+use acoustic_experience::AcousticExperienceService;
 use alarm_mqtt::{AlarmCommand, AlarmMqttService};
 
 const CHANNEL_CAPACITY: usize = 64;
@@ -44,6 +47,7 @@ pub struct AppState {
     pub acoustics_tx: mpsc::Sender<AcousticsCommand>,
     pub alarm_tx: mpsc::Sender<AlarmCommand>,
     pub metrics: Arc<metrics::MetricsRegistry>,
+    pub acoustic_experience: Arc<AcousticExperienceService>,
 }
 
 #[tokio::main]
@@ -56,7 +60,11 @@ async fn main() -> anyhow::Result<()> {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let config = AppConfig::load();
+    let mut config = AppConfig::load();
+    match config.load_json_configs() {
+        Ok(_) => info!("JSON configs loaded successfully"),
+        Err(e) => warn!("Failed to load JSON configs: {:#}", e),
+    }
     let config = Arc::new(config);
     info!("Starting Bronze Drum System v2.0.0 [mpsc microservice architecture]");
 
@@ -140,6 +148,7 @@ async fn main() -> anyhow::Result<()> {
         acoustics_tx,
         alarm_tx,
         metrics: metrics_registry.clone(),
+        acoustic_experience: Arc::new(AcousticExperienceService::new(config.clone())),
     };
 
     async fn metrics_handler(
@@ -167,7 +176,19 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/alarms/:drum_id", get(api::get_alarms))
         .route("/api/alarms/stream", get(api::alarm_stream))
         .route("/api/wall-thickness/:drum_id", get(api::get_wall_thickness))
-        .with_state(app_state.clone());
+        .route("/api/experience/ethnic-library", get(api::get_ethnic_drum_library))
+        .route("/api/experience/ethnic-drum/:id", get(api::get_ethnic_drum_profile))
+        .route("/api/experience/ethnic-compare", post(api::compare_ethnic_drums))
+        .route("/api/experience/cross-era", post(api::cross_era_comparison))
+        .route("/api/experience/ritual-soundfield", post(api::ritual_sound_field))
+        .route("/api/experience/virtual-tap", post(api::virtual_tap))
+        .with_state(app_state.clone())
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+                .allow_headers(Any),
+        );
 
     let listener = tokio::net::TcpListener::bind(format!("0.0.0.0:{}", config.server_port)).await?;
     info!("==================================================");

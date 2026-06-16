@@ -54,10 +54,22 @@
   </div>
 </header>
 
-<main class="max-w-[1920px] mx-auto p-6 grid grid-cols-12 gap-6">
+<main class="max-w-[1920px] mx-auto p-4">
 
-  <!-- 左侧控制区 -->
-  <aside class="col-span-3 space-y-5">
+  <div class="flex gap-2 mb-4">
+    <button data-main-tab="analysis" class="main-tab-btn active px-6 py-2.5 rounded-lg text-sm font-semibold bg-slate-800 border border-slate-700">
+      🔬 工艺分析模式
+    </button>
+    <button data-main-tab="experience" class="main-tab-btn px-6 py-2.5 rounded-lg text-sm font-semibold bg-slate-800/50 border border-slate-700/50 text-slate-400">
+      🎭 文化体验模式
+    </button>
+  </div>
+
+  <div id="analysis-view" class="main-tab-content">
+    <div class="grid grid-cols-12 gap-6">
+
+      <!-- 左侧控制区 -->
+      <aside class="col-span-3 space-y-5">
 
     <div class="bg-slate-800/80 rounded-xl p-5 border border-slate-700 glow">
       <h2 class="text-amber-400 font-semibold mb-4 flex items-center gap-2">
@@ -228,8 +240,292 @@
 
   </aside>
 
+    </div>
+  </div>
+
+  <div id="experience-view" class="main-tab-content hidden">
+
+    <div class="flex gap-2 mb-4">
+      <button data-exp-tab="ethnic" class="exp-tab-btn active px-5 py-2 rounded-lg text-sm font-medium bg-slate-800 border border-amber-600/50 text-amber-300">
+        🏯 民族声学对比
+      </button>
+      <button data-exp-tab="crossera" class="exp-tab-btn px-5 py-2 rounded-lg text-sm font-medium bg-slate-800/50 border border-slate-700 text-slate-400">
+        ⏳ 跨时代对比
+      </button>
+      <button data-exp-tab="ritual" class="exp-tab-btn px-5 py-2 rounded-lg text-sm font-medium bg-slate-800/50 border border-slate-700 text-slate-400">
+        🔥 祭祀声场
+      </button>
+      <button data-exp-tab="play" class="exp-tab-btn px-5 py-2 rounded-lg text-sm font-medium bg-slate-800/50 border border-slate-700 text-slate-400">
+        🎹 虚拟敲击
+      </button>
+    </div>
+
+    <div id="exp-ethnic" class="exp-tab-content">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-3 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🏯 选择民族铜鼓</h3>
+            <div id="ethnic-drum-list" class="space-y-2 text-sm max-h-96 overflow-y-auto"></div>
+            <div class="mt-3 text-xs text-slate-400">已选 <span id="ethnic-selected-count" class="text-amber-300 font-bold">0</span> 面铜鼓（最多4面）</div>
+            <button id="btn-ethnic-compare" class="w-full mt-3 py-2 bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-500 rounded-lg text-sm font-semibold">
+              🎶 开始声学对比
+            </button>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">📖 民族文化</h3>
+            <div id="ethnic-culture-info" class="text-xs text-slate-300 space-y-2">
+              <p class="text-slate-500">选择铜鼓查看民族文化信息</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-9 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">📊 频谱对比图</h3>
+            <canvas id="ethnic-spectrum-compare" class="w-full" height="260"></canvas>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+              <h3 class="text-amber-400 font-semibold mb-3 text-sm">📈 基频与品质对比</h3>
+              <canvas id="ethnic-bar-compare" class="w-full" height="200"></canvas>
+            </div>
+            <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+              <h3 class="text-amber-400 font-semibold mb-3 text-sm">📋 对比参数表</h3>
+              <div id="ethnic-compare-table" class="text-xs overflow-x-auto">
+                <p class="text-slate-500 text-center py-8">请选择铜鼓进行对比</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="exp-crossera" class="exp-tab-content hidden">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-4 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🏺 古代铜鼓</h3>
+            <select id="crossera-ancient-select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"></select>
+            <div id="crossera-ancient-info" class="mt-3 text-xs text-slate-300 space-y-1.5">
+              <div><span class="text-slate-500">民族：</span><span id="crossera-ancient-ethnic" class="text-amber-300">--</span></div>
+              <div><span class="text-slate-500">年代：</span><span id="crossera-ancient-era" class="text-amber-300">--</span></div>
+              <div><span class="text-slate-500">直径：</span><span id="crossera-ancient-diam" class="text-amber-300">--</span></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-indigo-400 font-semibold mb-3 text-sm">🥁 现代定音鼓</h3>
+            <select id="crossera-modern-select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500">
+              <option value="20">20" 定音鼓 (高音)</option>
+              <option value="23">23" 定音鼓 (中高音)</option>
+              <option value="26">26" 定音鼓 (中音)</option>
+              <option value="29" selected>29" 定音鼓 (中低音)</option>
+              <option value="32">32" 定音鼓 (低音)</option>
+            </select>
+            <div id="crossera-modern-info" class="mt-3 text-xs text-slate-300 space-y-1.5">
+              <div><span class="text-slate-500">材质：</span><span id="crossera-modern-mat" class="text-indigo-300">--</span></div>
+              <div><span class="text-slate-500">音域：</span><span id="crossera-modern-range" class="text-indigo-300">--</span></div>
+            </div>
+          </div>
+
+          <button id="btn-crossera-compare" class="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 rounded-xl font-semibold">
+            ⚖️ 开始跨时代对比
+          </button>
+        </div>
+
+        <div class="col-span-8 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">📊 频谱对比</h3>
+            <canvas id="crossera-spectrum" class="w-full" height="240"></canvas>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+              <div class="text-xs text-slate-400 mb-1">古代基频</div>
+              <div class="text-2xl font-bold text-amber-300" id="crossera-ancient-freq">--Hz</div>
+            </div>
+            <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+              <div class="text-xs text-slate-400 mb-1">现代基频</div>
+              <div class="text-2xl font-bold text-indigo-300" id="crossera-modern-freq">--Hz</div>
+            </div>
+            <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+              <div class="text-xs text-slate-400 mb-1">频比</div>
+              <div class="text-2xl font-bold text-purple-300" id="crossera-ratio">--</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📜 文化差异解读</h3>
+            <p id="crossera-cultural-note" class="text-xs text-slate-300 leading-relaxed">点击"开始跨时代对比"查看详细分析</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="exp-ritual" class="exp-tab-content hidden">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-3 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🥁 铜鼓阵列设置</h3>
+            <div class="space-y-3 text-sm">
+              <div>
+                <label class="text-slate-400 text-xs">阵列模式</label>
+                <select id="ritual-pattern" class="w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg px-2 py-1.5 text-xs">
+                  <option value="circle">圆形布阵（八方）</option>
+                  <option value="semicircle">半圆形布阵</option>
+                  <option value="line">一字长蛇阵</option>
+                  <option value="square">四方阵</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-slate-400 text-xs">鼓的数量</label>
+                <input id="ritual-drum-count" type="range" min="1" max="16" value="8" class="w-full accent-amber-500 mt-1">
+                <div class="text-xs text-amber-300 text-center"><span id="ritual-count-val">8</span> 面</div>
+              </div>
+              <div>
+                <label class="text-slate-400 text-xs">阵列半径 (米)</label>
+                <input id="ritual-radius" type="range" min="2" max="20" value="8" class="w-full accent-amber-500 mt-1">
+                <div class="text-xs text-amber-300 text-center"><span id="ritual-radius-val">8</span> m</div>
+              </div>
+              <div>
+                <label class="text-slate-400 text-xs">铜鼓型号</label>
+                <select id="ritual-drum-type" class="w-full mt-1 bg-slate-700 border border-slate-600 rounded-lg px-2 py-1.5 text-xs"></select>
+              </div>
+              <button id="btn-ritual-simulate" class="w-full py-2 bg-gradient-to-r from-red-700 to-orange-700 hover:from-red-600 rounded-lg text-sm font-semibold">
+                🔥 启动祭祀声场
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📜 仪式场景</h3>
+            <div id="ritual-scene-type" class="text-sm text-amber-300 font-semibold mb-2">--</div>
+            <p id="ritual-scene-desc" class="text-xs text-slate-300 leading-relaxed">设置参数后启动模拟</p>
+            <div class="mt-3 pt-3 border-t border-slate-700 text-xs text-slate-500 italic" id="ritual-history-ref">
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-6 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🌊 声场分布（俯视图）</h3>
+            <canvas id="ritual-soundfield-top" class="w-full" height="400"></canvas>
+          </div>
+        </div>
+
+        <div class="col-span-3 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📊 声场数据</h3>
+            <div class="space-y-2 text-xs">
+              <div class="flex justify-between">
+                <span class="text-slate-400">总声功率</span>
+                <span class="text-amber-300 font-bold" id="ritual-total-power">--W</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">中心SPL</span>
+                <span class="text-amber-300 font-bold" id="ritual-center-spl">--dB</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">鼓数量</span>
+                <span class="text-amber-300 font-bold" id="ritual-drum-num">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📈 时间包络</h3>
+            <canvas id="ritual-envelope" class="w-full" height="120"></canvas>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">🎭 体感描述</h3>
+            <p id="ritual-feeling" class="text-xs text-slate-300 leading-relaxed">
+              启动模拟后生成声压级与体感描述
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="exp-play" class="exp-tab-content hidden">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-3 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🥁 选择铜鼓</h3>
+            <select id="play-drum-select" class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500"></select>
+            <div id="play-drum-info" class="mt-3 text-xs text-slate-300 space-y-1">
+              <div>基频：<span id="play-fund-freq" class="text-amber-300">--</span></div>
+              <div>直径：<span id="play-diam" class="text-amber-300">--</span></div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-sm">🔨 敲击力度</h3>
+            <input id="play-force" type="range" min="0.1" max="2" step="0.1" value="1" class="w-full accent-amber-500">
+            <div class="text-xs text-center text-amber-300 mt-1">力度: <span id="play-force-val">1.0</span>x</div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📍 敲击位置</h3>
+            <div class="text-xs text-slate-300" id="play-zone-info">点击右侧鼓面任意位置</div>
+            <div class="mt-2 text-xs text-slate-400">
+              <div class="flex items-center gap-1.5 mb-1"><span class="w-3 h-3 rounded-full bg-amber-900"></span> 鼓心：浑厚深沉</div>
+              <div class="flex items-center gap-1.5 mb-1"><span class="w-3 h-3 rounded-full bg-amber-700"></span> 中部：平衡饱满</div>
+              <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-500"></span> 边缘：明亮清脆</div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">🎹 快捷键</h3>
+            <div class="text-xs text-slate-400 space-y-1">
+              <div><kbd class="bg-slate-700 px-1.5 py-0.5 rounded">A</kbd> 鼓心轻击</div>
+              <div><kbd class="bg-slate-700 px-1.5 py-0.5 rounded">S</kbd> 中部轻击</div>
+              <div><kbd class="bg-slate-700 px-1.5 py-0.5 rounded">D</kbd> 边缘轻击</div>
+              <div><kbd class="bg-slate-700 px-1.5 py-0.5 rounded">空格</kbd> 重击</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-span-6 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-3 text-center text-sm">👆 点击鼓面演奏</h3>
+            <div class="flex justify-center">
+              <canvas id="play-drum-surface" width="420" height="420" class="cursor-crosshair rounded-full" style="background: radial-gradient(circle, #1f2937 0%, #0f172a 100%);"></canvas>
+            </div>
+            <div class="text-center text-xs text-slate-400 mt-2" id="play-timbre">点击鼓面不同位置体验不同音色</div>
+          </div>
+        </div>
+
+        <div class="col-span-3 space-y-4">
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📊 实时频谱</h3>
+            <canvas id="play-spectrum" class="w-full" height="180"></canvas>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">📈 振幅包络</h3>
+            <canvas id="play-envelope" class="w-full" height="120"></canvas>
+          </div>
+
+          <div class="bg-slate-800/80 rounded-xl p-4 border border-slate-700">
+            <h3 class="text-amber-400 font-semibold mb-2 text-sm">🎵 音色参数</h3>
+            <div class="space-y-1.5 text-xs">
+              <div class="flex justify-between"><span class="text-slate-400">基频</span><span class="text-amber-300" id="play-param-fund">--Hz</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">衰减时间</span><span class="text-amber-300" id="play-param-decay">--s</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">亮度</span><span class="text-amber-300" id="play-param-bright">--</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">起音</span><span class="text-amber-300" id="play-param-attack">--ms</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </main>
 
-<script type="module" src="js/main.js"></script>
+<script type="module" src="js/main.js?v=4"></script>
 </body>
 </html>

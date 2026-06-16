@@ -254,7 +254,7 @@ impl AppConfig {
                 air: AirParams,
                 vibration: VibParams,
                 circular_plate: PlateParams,
-                nonlinear: NonlinearParams,
+                nonlinear: NonlinearJson,
                 sound_radiation: RadiationParams,
                 quality_metrics: QualityParams,
             }
@@ -264,6 +264,13 @@ impl AppConfig {
             struct VibParams { mode_count: usize }
             #[derive(Deserialize)]
             struct PlateParams { eigenvalues_lambda: Vec<EigenvalueEntry> }
+            #[derive(Deserialize)]
+            struct NonlinearJson {
+                arc_length_method: ArcLengthParams,
+                geometric_nonlinearity: GeomNonlinJson,
+            }
+            #[derive(Deserialize)]
+            struct GeomNonlinJson { large_deflection_ratio: f64 }
             #[derive(Deserialize)]
             struct RadiationParams { field_hemisphere_radius_m: f64, grid_resolution: usize, reference_pascals_pa: f64 }
             #[derive(Deserialize)]
@@ -276,7 +283,10 @@ impl AppConfig {
                 air_density_kgm3: root.air.density_kgm3,
                 mode_count: root.vibration.mode_count,
                 eigenvalues_lambda: root.circular_plate.eigenvalues_lambda,
-                nonlinear: root.nonlinear,
+                nonlinear: NonlinearParams {
+                    arc_length_method: root.nonlinear.arc_length_method,
+                    large_deflection_ratio: root.nonlinear.geometric_nonlinearity.large_deflection_ratio,
+                },
                 sound_radiation: SoundRadiationParams {
                     field_hemisphere_radius_m: root.sound_radiation.field_hemisphere_radius_m,
                     grid_resolution: root.sound_radiation.grid_resolution,
