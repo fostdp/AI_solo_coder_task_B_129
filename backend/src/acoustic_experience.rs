@@ -855,3 +855,354 @@ impl AcousticExperienceService {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use approx::assert_relative_eq;
+
+    fn make_test_service() -> AcousticExperienceService {
+        let config = crate::config::AppConfig::load();
+        AcousticExperienceService::new(std::sync::Arc::new(config))
+    }
+
+    #[test]
+    fn test_factorial_basic() {
+        assert_relative_eq!(AcousticExperienceService::factorial(0.0), 1.0);
+        assert_relative_eq!(AcousticExperienceService::factorial(1.0), 1.0);
+        assert_relative_eq!(AcousticExperienceService::factorial(5.0), 120.0);
+        assert_relative_eq!(AcousticExperienceService::factorial(10.0), 3628800.0);
+    }
+
+    #[test]
+    fn test_factorial_negative_returns_one() {
+        assert_relative_eq!(AcousticExperienceService::factorial(-1.0), 1.0);
+        assert_relative_eq!(AcousticExperienceService::factorial(-100.0), 1.0);
+    }
+
+    #[test]
+    fn test_factorial_large_no_overflow() {
+        let result = AcousticExperienceService::factorial(30.0);
+        assert!(result.is_finite(), "30! should be finite (was f64)");
+        assert!(result > 1e30, "30! should be huge");
+        let r60 = AcousticExperienceService::factorial(60.0);
+        assert!(r60.is_finite() || r60.is_infinite(),
+            "60! either finite or +inf (no panic/overflow)");
+    }
+
+    #[test]
+    fn test_bessel_j_zero_order_at_zero() {
+        let j = AcousticExperienceService::bessel_j(0, 0.0);
+        assert_relative_eq!(j, 1.0, max_relative = 1e-9);
+    }
+
+    #[test]
+    fn test_bessel_j_known_values() {
+        assert_relative_eq!(AcousticExperienceService::bessel_j(0, 1.0),
+            0.7651976865, max_relative = 1e-5);
+        assert_relative_eq!(AcousticExperienceService::bessel_j(1, 1.0),
+            0.4400505857, max_relative = 1e-5);
+    }
+
+    #[test]
+    fn test_bessel_j_boundary_x_zero_nonzero_m() {
+        for m in 1..=5 {
+            let v = AcousticExperienceService::bessel_j(m, 0.0);
+            assert_relative_eq!(v, 0.0, max_relative = 1e-9);
+        }
+    }
+
+    #[test]
+    fn test_bessel_j_large_m_and_x_no_panic() {
+        let r = AcousticExperienceService::bessel_j(6, 20.0);
+        assert!(r.is_finite(), "bessel_j should not panic at m=6,x=20");
+    }
+
+    #[test]
+    fn test_bessel_i_zero_order_at_zero() {
+        assert_relative_eq!(AcousticExperienceService::bessel_i(0, 0.0), 1.0);
+    }
+
+    #[test]
+    fn test_bessel_i_m_ge_1_at_zero() {
+        for m in 1..=5 {
+            let v = AcousticExperienceService::bessel_i(m, 0.0);
+            assert_relative_eq!(v, 0.0, max_relative = 1e-9);
+        }
+    }
+
+    #[test]
+    fn test_bessel_i_large_argument_no_panic() {
+        let r = AcousticExperienceService::bessel_i(6, 100.0);
+        assert!(r.is_finite() || r.is_infinite(),
+            "bessel_i should not panic at large argument");
+    }
+
+    #[test]
+    fn test_get_lambda_returns_valid() {
+        let s = make_test_service();
+        let lam = s.get_lambda(0, 1);
+        assert!(lam > 0.0, "lambda_{{0,1}} must be positive (got {lam})");
+        let lam2 = s.get_lambda(2, 2);
+        assert!(lam2 > lam, "higher order modes have larger lambda");
+    }
+
+    #[test]
+    fn test_get_lambda_boundary_m_large() {
+        let s = make_test_service();
+        let _ = s.get_lambda(3, 6);
+    }
+
+    #[test]
+    fn test_ethnic_library_has_six_drums() {
+        let s = make_test_service();
+        let lib = s.get_ethnic_drum_library();
+        assert_eq!(lib.len(), 6, "expected 2*3 ethnic drums = 6");
+        for d in &lib {
+            assert!(!d.drum_id.is_empty());
+            assert!(d.diameter_cm > 0.0);
+            assert!(matches!(d.ethnic_group.as_str(),
+                "壮族" | "苗族" | "瑶族"));
+        }
+    }
+
+    #[test]
+    fn test_get_profile_valid_and_invalid() {
+        let s = make_test_service();
+        let valid = s.get_ethnic_drum_profile("zhuang-dagu");
+        assert!(valid.is_some(), "zhuang-dagu should exist");
+        let v = valid.unwrap();
+        assert_eq!(v.drum_id, "zhuang-dagu");
+        assert!(v.alloy.copper_pct + v.alloy.tin_pct + v.alloy.lead_pct
+            + v.alloy.zinc_pct + v.alloy.other_impurities_pct
+            > 99.9);
+
+        let missing = s.get_ethnic_drum_profile("does-not-exist-xyz");
+        assert!(missing.is_none(), "nonexistent should return None");
+    }
+
+    #[test]
+    fn test_compare_ethnic_drums_normal() {
+        let s = make_test_service();
+        let result = s.compare_ethnic_drums(
+            vec!["zhuang-dagu".into(), "miao-dagu".into(), "yao-dagu".into()]
+        );
+        assert_eq!(result.drums.len(), 3);
+        assert_eq!(result.frequency_spectra.len(), 3);
+        for (drum_id, bins) in &result.frequency_spectra {
+            assert!(!bins.is_empty(), "spectrum of {drum_id} should have bins");
+            for b in bins {
+                assert!(b.frequency_hz > 0.0);
+                assert!(b.amplitude_db <= 200.0);
+            }
+        }
+        assert!(result.comparison_metrics.fundamental_freqs.len() >= 3);
+    }
+
+    #[test]
+    fn test_compare_ethnic_drums_single_element_edge() {
+        let s = make_test_service();
+        let r = s.compare_ethnic_drums(vec!["yao-guzai".into()]);
+        assert_eq!(r.drums.len(), 1);
+        assert_eq!(r.frequency_spectra.len(), 1);
+        assert!(r.vibration_modes_comparison.len() >= 1);
+    }
+
+    #[test]
+    fn test_compare_ethnic_drums_includes_invalid() {
+        let s = make_test_service();
+        let r = s.compare_ethnic_drums(vec![
+            "zhuang-dagu".into(),
+            "invalid-id-12345".into(),
+            "miao-xiaogu".into(),
+        ]);
+        assert_eq!(r.drums.len(), 2,
+            "invalid drum should be skipped, 2 valid remain");
+    }
+
+    #[test]
+    fn test_cross_era_comparison_normal() {
+        let s = make_test_service();
+        let r = s.cross_era_comparison("zhuang-dagu", Some(29.0));
+        assert!(r.is_some(), "comparison must be Some for valid drum");
+        let u = r.unwrap();
+        let m = &u.metrics_comparison;
+        assert!(m.ancient_fundamental_hz > 0.0);
+        assert!(m.modern_fundamental_hz > 0.0);
+        assert!(!u.ancient_spectrum.is_empty());
+        assert!(!u.modern_spectrum.is_empty());
+    }
+
+    #[test]
+    fn test_cross_era_comparison_timpani_sizes_boundary() {
+        let s = make_test_service();
+        let r_small = s.cross_era_comparison("yao-guzai", Some(20.0)).unwrap();
+        let r_large = s.cross_era_comparison("yao-guzai", Some(32.0)).unwrap();
+        assert!(r_large.metrics_comparison.modern_fundamental_hz
+            < r_small.metrics_comparison.modern_fundamental_hz,
+            "larger timpani has lower fundamental");
+    }
+
+    #[test]
+    fn test_cross_era_comparison_invalid_drum() {
+        let s = make_test_service();
+        let r = s.cross_era_comparison("nope-no-such-drum", Some(26.0));
+        assert!(r.is_none(), "invalid drum id -> None");
+    }
+
+    #[test]
+    fn test_virtual_tap_center_is_sane() {
+        let s = make_test_service();
+        let opt = s.virtual_tap(VirtualTapRequest {
+            drum_id: "zhuang-dagu".into(), x_frac: 0.5, y_frac: 0.5,
+            strike_force: 1.0, striker_type: None,
+        });
+        let c = opt.unwrap();
+        assert!((1.0..=100.0).contains(&c.brightness),
+            "center brightness expected sane (got {})", c.brightness);
+        assert!(c.decay_time_s > 0.0);
+        assert!(c.fundamental_freq_hz > 0.0);
+    }
+
+    #[test]
+    fn test_virtual_tap_edge_vs_center_different() {
+        let s = make_test_service();
+        let center = s.virtual_tap(VirtualTapRequest {
+            drum_id: "zhuang-dagu".into(), x_frac: 0.5, y_frac: 0.5,
+            strike_force: 1.0, striker_type: None,
+        }).unwrap();
+        let edge = s.virtual_tap(VirtualTapRequest {
+            drum_id: "zhuang-dagu".into(), x_frac: 0.95, y_frac: 0.5,
+            strike_force: 1.0, striker_type: None,
+        }).unwrap();
+        assert_ne!(center.zone_name, edge.zone_name,
+            "center vs edge should have different zone names");
+    }
+
+    #[test]
+    fn test_virtual_tap_outside_bounds_clamps() {
+        let s = make_test_service();
+        let r1 = s.virtual_tap(VirtualTapRequest {
+            drum_id: "miao-dagu".into(),
+            x_frac: 999.0, y_frac: -100.0,
+            strike_force: 1.0, striker_type: None,
+        });
+        assert!(r1.is_some(), "even garbage coords must produce result");
+        assert!(r1.unwrap().fundamental_freq_hz > 0.0);
+    }
+
+    #[test]
+    fn test_virtual_tap_force_boundary_zero_and_high() {
+        let s = make_test_service();
+        let rz = s.virtual_tap(VirtualTapRequest {
+            drum_id: "zhuang-dagu".into(),
+            x_frac: 0.5, y_frac: 0.5, strike_force: 0.0, striker_type: None,
+        }).unwrap();
+        assert!(rz.web_audio_params.attack_s >= 0.0, "zero force handled");
+        let rh = s.virtual_tap(VirtualTapRequest {
+            drum_id: "zhuang-dagu".into(),
+            x_frac: 0.5, y_frac: 0.5, strike_force: 100.0, striker_type: None,
+        }).unwrap();
+        assert!(rh.decay_time_s > 0.0, "huge force handled without panic");
+    }
+
+    #[test]
+    fn test_compute_modes_produces_stable_frequencies() {
+        let s = make_test_service();
+        let profile = s.get_ethnic_drum_profile("zhuang-dagu").unwrap();
+        let modes = s.compute_modes_for_drum(&profile);
+        assert!(!modes.is_empty());
+        for (_, _, f, damp) in &modes {
+            assert!(*f > 0.0, "frequency must be positive");
+            assert!(*damp > 0.0, "damping must be positive");
+        }
+    }
+
+    #[test]
+    fn test_ritual_sound_field_multiple_drums() {
+        let s = make_test_service();
+        let placements = vec![
+            RitualDrumPlacement {
+                drum_id: "zhuang-dagu".into(),
+                position_x_m: -3.0, position_y_m: 0.0, position_z_m: 0.0,
+                relative_volume: 1.0, strike_phase_offset_s: 0.0,
+            },
+            RitualDrumPlacement {
+                drum_id: "miao-dagu".into(),
+                position_x_m: 3.0, position_y_m: 0.0, position_z_m: 0.0,
+                relative_volume: 0.8, strike_phase_offset_s: 0.1,
+            },
+        ];
+        let req = RitualSoundFieldRequest {
+            drum_placements: placements,
+            observer_x_m: Some(0.0), observer_y_m: Some(0.0), observer_z_m: Some(1.5),
+            field_radius_m: Some(10.0), grid_resolution: Some(4),
+        };
+        let r = s.ritual_sound_field(req);
+        assert_eq!(r.drum_count, 2);
+        assert!(!r.sound_field.is_empty());
+        for sfp in &r.sound_field {
+            assert!(sfp.spl_db < 200.0, "SPL must be realistic (< 200 dB)");
+            assert!(sfp.pressure_pa >= 0.0, "pressure amplitude non-negative");
+            assert!(sfp.intensity_wm2 >= 0.0);
+        }
+        assert!(r.observer_spl_db > 0.0 && r.observer_spl_db < 200.0);
+        assert!(r.total_radiated_power_w > 0.0);
+        assert!(!r.temporal_envelope.is_empty());
+    }
+
+    #[test]
+    fn test_ritual_sound_field_empty_edge() {
+        let s = make_test_service();
+        let req = RitualSoundFieldRequest {
+            drum_placements: vec![],
+            observer_x_m: Some(0.0), observer_y_m: Some(0.0), observer_z_m: Some(0.0),
+            field_radius_m: Some(5.0), grid_resolution: Some(3),
+        };
+        let r = s.ritual_sound_field(req);
+        assert_eq!(r.drum_count, 0, "empty placements -> drum_count 0");
+        for sfp in &r.sound_field {
+            assert!(sfp.spl_db.is_finite(),
+                "empty field should not produce NaN SPL");
+        }
+    }
+
+    #[test]
+    fn test_ritual_sound_field_large_grid_no_panic() {
+        let s = make_test_service();
+        let placements = (0..16).map(|i| RitualDrumPlacement {
+            drum_id: "zhuang-dagu".into(),
+            position_x_m: (i as f64) * 0.5 - 4.0,
+            position_y_m: 0.0, position_z_m: 0.0,
+            relative_volume: 1.0, strike_phase_offset_s: 0.0,
+        }).collect();
+        let req = RitualSoundFieldRequest {
+            drum_placements: placements,
+            observer_x_m: Some(0.0), observer_y_m: Some(0.0), observer_z_m: Some(1.5),
+            field_radius_m: Some(15.0), grid_resolution: Some(16),
+        };
+        let r = s.ritual_sound_field(req);
+        assert!(r.sound_field.len() >= 16 * 16 / 2);
+    }
+
+    #[test]
+    fn test_ritual_sound_field_observer_coincident_with_drum_no_nan() {
+        let s = make_test_service();
+        let req = RitualSoundFieldRequest {
+            drum_placements: vec![RitualDrumPlacement {
+                drum_id: "zhuang-dagu".into(),
+                position_x_m: 0.0, position_y_m: 0.0, position_z_m: 0.0,
+                relative_volume: 1.0, strike_phase_offset_s: 0.0,
+            }],
+            observer_x_m: Some(0.0), observer_y_m: Some(0.0), observer_z_m: Some(0.0),
+            field_radius_m: Some(5.0), grid_resolution: Some(4),
+        };
+        let r = s.ritual_sound_field(req);
+        assert!(r.observer_spl_db.is_finite(),
+            "observer at drum position: SPL must remain finite");
+        for sfp in &r.sound_field {
+            assert!(sfp.pressure_pa.is_finite(),
+                "pressure must be finite at every point");
+        }
+    }
+}

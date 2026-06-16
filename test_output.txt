@@ -1,0 +1,883 @@
+﻿cargo :     Blocking waiting for file lock on build directory
+所在位置 行:1 字符: 49
++ ... 9\backend ; cargo test --bin bronze-drum-server acoustic_experience:: ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Blocking wa...build directory 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   Compiling bronze-drum-system v1.0.0 (D:\SOLO-2\AI_solo_coder_task_B_129\back
+end)
+error[E0422]: cannot find struct, variant or union type `AlloyComposition` in m
+odule `crate::config`
+   --> src\acoustic_experience.rs:870:32
+    |
+870 |                 crate::config::AlloyComposition {
+    |                                ^^^^^^^^^^^^^^^^ not found in `crate::conf
+ig`
+    |
+help: consider importing this struct through its public re-export
+    |
+861 +     use crate::acoustic_experience::AlloyComposition;
+    |
+help: if you import `AlloyComposition`, refer to it directly
+    |
+870 -                 crate::config::AlloyComposition {
+870 +                 AlloyComposition {
+    |
+
+warning: unused import: `mpsc`
+ --> src\mqtt_client.rs:5:30
+  |
+5 | use tokio::sync::{broadcast, mpsc};
+  |                              ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `DtuEvent`
+ --> src\api.rs:5:27
+  |
+5 | use crate::dtu_receiver::{DtuEvent, DtuReceiver};
+  |                           ^^^^^^^^
+
+warning: unused import: `IntoResponse`
+  --> src\api.rs:10:16
+   |
+10 |     response::{IntoResponse, Response},
+   |                ^^^^^^^^^^^^
+
+warning: unused import: `mpsc`
+  --> src\api.rs:15:19
+   |
+15 | use tokio::sync::{mpsc, oneshot};
+   |                   ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\casting_simulator.rs:6:15
+  |
+6 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\acoustic_analyzer.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug` and `warn`
+ --> src\alarm_mqtt.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^               ^^^^
+
+warning: unused import: `uuid::Uuid`
+  --> src\alarm_mqtt.rs:10:5
+   |
+10 | use uuid::Uuid;
+   |     ^^^^^^^^^^
+
+warning: unused import: `chrono::Utc`
+  --> src\alarm_mqtt.rs:11:5
+   |
+11 | use chrono::Utc;
+   |     ^^^^^^^^^^^
+
+error[E0599]: no associated function or constant named `load_from_dir` found fo
+r struct `AppConfig` in the current scope
+   --> src\acoustic_experience.rs:865:48
+    |
+865 |         let config = crate::config::AppConfig::load_from_dir("config")
+    |                                                ^^^^^^^^^^^^^ associated f
+unction or constant not found in `AppConfig`
+    |
+   ::: src\config.rs:101:1
+    |
+101 | pub struct AppConfig {
+    | -------------------- associated function or constant `load_from_dir` not 
+found for this struct
+    |
+note: if you're trying to build a new `AppConfig`, consider using `AppConfig::l
+oad` which returns `AppConfig`
+   --> src\config.rs:122:5
+    |
+122 |     pub fn load() -> Self {
+    |     ^^^^^^^^^^^^^^^^^^^^^
+
+error[E0061]: this function takes 1 argument but 5 arguments were supplied
+   --> src\acoustic_experience.rs:867:9
+    |
+867 |           AcousticExperienceService::new(
+    |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+868 |               std::sync::Arc::new(config),
+869 | /             std::sync::Arc::new(
+870 | |                 crate::config::AlloyComposition {
+871 | |                     copper_pct: 82.0, tin_pct: 16.0, lead_pct: 1.0,
+872 | |                     zinc_pct: 0.5, other_impurities_pct: 0.5,
+873 | |                 }
+874 | |             ),
+    | |_____________- unexpected argument #2
+875 |               1.0, 0.05, 0.5,
+    |               ---  ----  --- unexpected argument #5 of type `{float}`
+    |               |    |
+    |               |    unexpected argument #4 of type `{float}`
+    |               unexpected argument #3 of type `{float}`
+    |
+note: associated function defined here
+   --> src\acoustic_experience.rs:10:12
+    |
+ 10 |     pub fn new(config: Arc<AppConfig>) -> Self {
+    |            ^^^
+help: remove the extra arguments
+    |
+868 -             std::sync::Arc::new(config),
+869 -             std::sync::Arc::new(
+870 -                 crate::config::AlloyComposition {
+871 -                     copper_pct: 82.0, tin_pct: 16.0, lead_pct: 1.0,
+872 -                     zinc_pct: 0.5, other_impurities_pct: 0.5,
+873 -                 }
+874 -             ),
+875 -             1.0, 0.05, 0.5,
+868 +             std::sync::Arc::new(config),
+    |
+
+error[E0609]: no field `face_diameter_m` on type `&models::EthnicDrumLibraryEnt
+ry`
+   --> src\acoustic_experience.rs:973:23
+    |
+973 |             assert!(d.face_diameter_m > 0.0);
+    |                       ^^^^^^^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `drum_id`, `name`, `ethnic_group`, `diameter_
+cm`, `fundamental_hz`, `cultural_tag`
+
+error[E0609]: no field `ethnicity` on type `&models::EthnicDrumLibraryEntry`
+   --> src\acoustic_experience.rs:974:32
+    |
+974 |             assert!(matches!(d.ethnicity.as_str(),
+    |                                ^^^^^^^^^ unknown field
+    |
+    = note: available fields are: `drum_id`, `name`, `ethnic_group`, `diameter_
+cm`, `fundamental_hz`, `cultural_tag`
+
+error[E0599]: no method named `is_empty` found for reference `&(std::string::St
+ring, Vec<models::SpectrumBin>)` in the current scope
+    --> src\acoustic_experience.rs:1003:28
+     |
+1003 |             assert!(!fspec.is_empty(), "each spectrum should have bins")
+;
+     |                            ^^^^^^^^ method not found in `&(std::string::
+String, Vec<models::SpectrumBin>)`
+     |
+help: some of the expressions' fields have a method of the same name
+     |
+1003 |             assert!(!fspec.0.is_empty(), "each spectrum should have bins
+");
+     |                            ++
+1003 |             assert!(!fspec.1.is_empty(), "each spectrum should have bins
+");
+     |                            ++
+
+error[E0277]: `&(std::string::String, Vec<models::SpectrumBin>)` is not an iter
+ator
+    --> src\acoustic_experience.rs:1004:22
+     |
+1004 |             for b in fspec {
+     |                      ^^^^^ `&(std::string::String, Vec<models::SpectrumB
+in>)` is not an iterator
+     |
+     = help: the trait `Iterator` is not implemented for `&(std::string::String
+, Vec<models::SpectrumBin>)`
+     = note: required for `&(std::string::String, Vec<models::SpectrumBin>)` to
+ implement `IntoIterator`
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1035:55
+     |
+1035 |         let r = s.cross_era_comparison("zhuang-dagu", 29.0);
+     |                   --------------------                ^^^^ expected `Opt
+ion<f64>`, found floating-point number
+     |                   |
+     |                   arguments to this method are incorrect
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+note: method defined here
+    --> src\acoustic_experience.rs:345:12
+     |
+ 345 |     pub fn cross_era_comparison(
+     |            ^^^^^^^^^^^^^^^^^^^^
+...
+ 348 |         timpani_size_inches: Option<f64>,
+     |         --------------------------------
+help: try wrapping the expression in `Some`
+     |
+1035 |         let r = s.cross_era_comparison("zhuang-dagu", Some(29.0));
+     |                                                       +++++    +
+
+error[E0609]: no field `metrics_comparison` on type `std::option::Option<models
+::CrossEraComparison>`
+    --> src\acoustic_experience.rs:1036:20
+     |
+1036 |         let m = &r.metrics_comparison;
+     |                    ^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1036 |         let m = &r.unwrap().metrics_comparison;
+     |                    +++++++++
+
+error[E0609]: no field `ancient_spectrum` on type `std::option::Option<models::
+CrossEraComparison>`
+    --> src\acoustic_experience.rs:1041:20
+     |
+1041 |         assert!(!r.ancient_spectrum.is_empty());
+     |                    ^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1041 |         assert!(!r.unwrap().ancient_spectrum.is_empty());
+     |                    +++++++++
+
+error[E0609]: no field `modern_spectrum` on type `std::option::Option<models::C
+rossEraComparison>`
+    --> src\acoustic_experience.rs:1042:20
+     |
+1042 |         assert!(!r.modern_spectrum.is_empty());
+     |                    ^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1042 |         assert!(!r.unwrap().modern_spectrum.is_empty());
+     |                    +++++++++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1048:59
+     |
+1048 |         let r_small = s.cross_era_comparison("yao-guzai", 20.0);
+     |                         --------------------              ^^^^ expected 
+`Option<f64>`, found floating-point number
+     |                         |
+     |                         arguments to this method are incorrect
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+note: method defined here
+    --> src\acoustic_experience.rs:345:12
+     |
+ 345 |     pub fn cross_era_comparison(
+     |            ^^^^^^^^^^^^^^^^^^^^
+...
+ 348 |         timpani_size_inches: Option<f64>,
+     |         --------------------------------
+help: try wrapping the expression in `Some`
+     |
+1048 |         let r_small = s.cross_era_comparison("yao-guzai", Some(20.0));
+     |                                                           +++++    +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1049:59
+     |
+1049 |         let r_large = s.cross_era_comparison("yao-guzai", 32.0);
+     |                         --------------------              ^^^^ expected 
+`Option<f64>`, found floating-point number
+     |                         |
+     |                         arguments to this method are incorrect
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+note: method defined here
+    --> src\acoustic_experience.rs:345:12
+     |
+ 345 |     pub fn cross_era_comparison(
+     |            ^^^^^^^^^^^^^^^^^^^^
+...
+ 348 |         timpani_size_inches: Option<f64>,
+     |         --------------------------------
+help: try wrapping the expression in `Some`
+     |
+1049 |         let r_large = s.cross_era_comparison("yao-guzai", Some(32.0));
+     |                                                           +++++    +
+
+error[E0609]: no field `metrics_comparison` on type `std::option::Option<models
+::CrossEraComparison>`
+    --> src\acoustic_experience.rs:1050:25
+     |
+1050 |         assert!(r_large.metrics_comparison.modern_fundamental_hz
+     |                         ^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1050 |         assert!(r_large.unwrap().metrics_comparison.modern_fundamental_h
+z
+     |                         +++++++++
+
+error[E0609]: no field `metrics_comparison` on type `std::option::Option<models
+::CrossEraComparison>`
+    --> src\acoustic_experience.rs:1051:23
+     |
+1051 |             < r_small.metrics_comparison.modern_fundamental_hz,
+     |                       ^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1051 |             < r_small.unwrap().metrics_comparison.modern_fundamental_hz,
+     |                       +++++++++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1058:61
+     |
+1058 |         let r = s.cross_era_comparison("nope-no-such-drum", 26.0);
+     |                   --------------------                      ^^^^ expecte
+d `Option<f64>`, found floating-point number
+     |                   |
+     |                   arguments to this method are incorrect
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+note: method defined here
+    --> src\acoustic_experience.rs:345:12
+     |
+ 345 |     pub fn cross_era_comparison(
+     |            ^^^^^^^^^^^^^^^^^^^^
+...
+ 348 |         timpani_size_inches: Option<f64>,
+     |         --------------------------------
+help: try wrapping the expression in `Some`
+     |
+1058 |         let r = s.cross_era_comparison("nope-no-such-drum", Some(26.0));
+     |                                                             +++++    +
+
+error[E0609]: no field `metrics_comparison` on type `std::option::Option<models
+::CrossEraComparison>`
+    --> src\acoustic_experience.rs:1059:19
+     |
+1059 |         assert!(r.metrics_comparison.ancient_fundamental_hz > 0.0,
+     |                   ^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1059 |         assert!(r.unwrap().metrics_comparison.ancient_fundamental_hz > 0
+.0,
+     |                   +++++++++
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1066:31
+     |
+1066 |         let c = s.virtual_tap(VirtualTapRequest {
+     |                               ^^^^^^^^^^^^^^^^^ missing `striker_type`
+
+error[E0609]: no field `brightness` on type `std::option::Option<models::Virtua
+lTapResult>`
+    --> src\acoustic_experience.rs:1070:44
+     |
+1070 |         assert!((1.0..=1000.0).contains(&c.brightness),
+     |                                            ^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1070 |         assert!((1.0..=1000.0).contains(&c.unwrap().brightness),
+     |                                            +++++++++
+
+error[E0609]: no field `brightness` on type `std::option::Option<models::Virtua
+lTapResult>`
+    --> src\acoustic_experience.rs:1071:59
+     |
+1071 |             "center brightness expected sane (got {})", c.brightness);
+     |                                                           ^^^^^^^^^^ unk
+nown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1071 |             "center brightness expected sane (got {})", c.unwrap().brigh
+tness);
+     |                                                           +++++++++
+
+error[E0609]: no field `decay_time_s` on type `std::option::Option<models::Virt
+ualTapResult>`
+    --> src\acoustic_experience.rs:1072:19
+     |
+1072 |         assert!(c.decay_time_s > 0.0);
+     |                   ^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1072 |         assert!(c.unwrap().decay_time_s > 0.0);
+     |                   +++++++++
+
+error[E0609]: no field `fundamental_freq_hz` on type `std::option::Option<model
+s::VirtualTapResult>`
+    --> src\acoustic_experience.rs:1073:19
+     |
+1073 |         assert!(c.fundamental_freq_hz > 0.0);
+     |                   ^^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1073 |         assert!(c.unwrap().fundamental_freq_hz > 0.0);
+     |                   +++++++++
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1079:36
+     |
+1079 |         let center = s.virtual_tap(VirtualTapRequest {
+     |                                    ^^^^^^^^^^^^^^^^^ missing `striker_ty
+pe`
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1082:34
+     |
+1082 |         let edge = s.virtual_tap(VirtualTapRequest {
+     |                                  ^^^^^^^^^^^^^^^^^ missing `striker_type
+`
+
+error[E0609]: no field `zone_name` on type `std::option::Option<models::Virtual
+TapResult>`
+    --> src\acoustic_experience.rs:1085:27
+     |
+1085 |         assert_ne!(center.zone_name, edge.zone_name,
+     |                           ^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1085 |         assert_ne!(center.unwrap().zone_name, edge.zone_name,
+     |                           +++++++++
+
+error[E0609]: no field `zone_name` on type `std::option::Option<models::Virtual
+TapResult>`
+    --> src\acoustic_experience.rs:1085:43
+     |
+1085 |         assert_ne!(center.zone_name, edge.zone_name,
+     |                                           ^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1085 |         assert_ne!(center.zone_name, edge.unwrap().zone_name,
+     |                                           +++++++++
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1092:32
+     |
+1092 |         let r1 = s.virtual_tap(VirtualTapRequest {
+     |                                ^^^^^^^^^^^^^^^^^ missing `striker_type`
+
+error[E0609]: no field `fundamental_freq_hz` on type `std::option::Option<model
+s::VirtualTapResult>`
+    --> src\acoustic_experience.rs:1097:20
+     |
+1097 |         assert!(r1.fundamental_freq_hz > 0.0,
+     |                    ^^^^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1097 |         assert!(r1.unwrap().fundamental_freq_hz > 0.0,
+     |                    +++++++++
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1104:32
+     |
+1104 |         let rz = s.virtual_tap(VirtualTapRequest {
+     |                                ^^^^^^^^^^^^^^^^^ missing `striker_type`
+
+error[E0609]: no field `web_audio_params` on type `std::option::Option<models::
+VirtualTapResult>`
+    --> src\acoustic_experience.rs:1108:20
+     |
+1108 |         assert!(rz.web_audio_params.attack_s >= 0.0, "zero force handled
+");
+     |                    ^^^^^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1108 |         assert!(rz.unwrap().web_audio_params.attack_s >= 0.0, "zero forc
+e handled");
+     |                    +++++++++
+
+error[E0063]: missing field `striker_type` in initializer of `models::VirtualTa
+pRequest`
+    --> src\acoustic_experience.rs:1109:32
+     |
+1109 |         let rh = s.virtual_tap(VirtualTapRequest {
+     |                                ^^^^^^^^^^^^^^^^^ missing `striker_type`
+
+error[E0609]: no field `decay_time_s` on type `std::option::Option<models::Virt
+ualTapResult>`
+    --> src\acoustic_experience.rs:1113:20
+     |
+1113 |         assert!(rh.decay_time_s > 0.0, "huge force handled without panic
+");
+     |                    ^^^^^^^^^^^^ unknown field
+     |
+help: one of the expressions' fields has a field of the same name
+     |
+1113 |         assert!(rh.unwrap().decay_time_s > 0.0, "huge force handled with
+out panic");
+     |                    +++++++++
+
+error[E0061]: this method takes 1 argument but 3 arguments were supplied
+    --> src\acoustic_experience.rs:1119:23
+     |
+1119 |         let modes = s.compute_modes_for_drum(1.0, 0.05, 8000.0);
+     |                       ^^^^^^^^^^^^^^^^^^^^^^ ---  ----  ------ unexpecte
+d argument #3 of type `{float}`
+     |                                              |    |
+     |                                              |    unexpected argument #2
+ of type `{float}`
+     |                                              expected `&EthnicDrumProfil
+e`, found floating-point number
+     |
+note: method defined here
+    --> src\acoustic_experience.rs:160:8
+     |
+ 160 |     fn compute_modes_for_drum(&self, drum: &EthnicDrumProfile) -> Vec<(u
+size, usize, f64, f64)> {
+     |        ^^^^^^^^^^^^^^^^^^^^^^        ------------------------
+help: remove the extra arguments
+     |
+1119 -         let modes = s.compute_modes_for_drum(1.0, 0.05, 8000.0);
+1119 +         let modes = s.compute_modes_for_drum(/* &models::EthnicDrumProfi
+le */);
+     |
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1144:27
+     |
+1144 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                           ^^^ expected `Option<f64>`, found floating-poi
+nt number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1144 |             observer_x_m: Some(0.0), observer_y_m: 0.0, observer_z_m: 1.
+5,
+     |                           +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1144:46
+     |
+1144 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                                              ^^^ expected `Option<f64>`,
+ found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1144 |             observer_x_m: 0.0, observer_y_m: Some(0.0), observer_z_m: 1.
+5,
+     |                                              +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1144:65
+     |
+1144 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                                                                 ^^^ expe
+cted `Option<f64>`, found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1144 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: Some(1.5
+),
+     |                                                                 +++++   
++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1145:29
+     |
+1145 |             field_radius_m: 10.0, grid_resolution: 4,
+     |                             ^^^^ expected `Option<f64>`, found floating-
+point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1145 |             field_radius_m: Some(10.0), grid_resolution: 4,
+     |                             +++++    +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1145:52
+     |
+1145 |             field_radius_m: 10.0, grid_resolution: 4,
+     |                                                    ^ expected `Option<us
+ize>`, found integer
+     |
+     = note: expected enum `std::option::Option<usize>`
+                found type `{integer}`
+help: try wrapping the expression in `Some`
+     |
+1145 |             field_radius_m: 10.0, grid_resolution: Some(4),
+     |                                                    +++++ +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1165:27
+     |
+1165 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                           ^^^ expected `Option<f64>`, found floating-poi
+nt number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1165 |             observer_x_m: Some(0.0), observer_y_m: 0.0, observer_z_m: 0.
+0,
+     |                           +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1165:46
+     |
+1165 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                                              ^^^ expected `Option<f64>`,
+ found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1165 |             observer_x_m: 0.0, observer_y_m: Some(0.0), observer_z_m: 0.
+0,
+     |                                              +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1165:65
+     |
+1165 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                                                                 ^^^ expe
+cted `Option<f64>`, found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1165 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: Some(0.0
+),
+     |                                                                 +++++   
++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1166:29
+     |
+1166 |             field_radius_m: 5.0, grid_resolution: 3,
+     |                             ^^^ expected `Option<f64>`, found floating-p
+oint number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1166 |             field_radius_m: Some(5.0), grid_resolution: 3,
+     |                             +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1166:51
+     |
+1166 |             field_radius_m: 5.0, grid_resolution: 3,
+     |                                                   ^ expected `Option<usi
+ze>`, found integer
+     |
+     = note: expected enum `std::option::Option<usize>`
+                found type `{integer}`
+help: try wrapping the expression in `Some`
+     |
+1166 |             field_radius_m: 5.0, grid_resolution: Some(3),
+     |                                                   +++++ +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1187:27
+     |
+1187 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                           ^^^ expected `Option<f64>`, found floating-poi
+nt number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1187 |             observer_x_m: Some(0.0), observer_y_m: 0.0, observer_z_m: 1.
+5,
+     |                           +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1187:46
+     |
+1187 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                                              ^^^ expected `Option<f64>`,
+ found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1187 |             observer_x_m: 0.0, observer_y_m: Some(0.0), observer_z_m: 1.
+5,
+     |                                              +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1187:65
+     |
+1187 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 1.5,
+     |                                                                 ^^^ expe
+cted `Option<f64>`, found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1187 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: Some(1.5
+),
+     |                                                                 +++++   
++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1188:29
+     |
+1188 |             field_radius_m: 15.0, grid_resolution: 16,
+     |                             ^^^^ expected `Option<f64>`, found floating-
+point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1188 |             field_radius_m: Some(15.0), grid_resolution: 16,
+     |                             +++++    +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1188:52
+     |
+1188 |             field_radius_m: 15.0, grid_resolution: 16,
+     |                                                    ^^ expected `Option<u
+size>`, found integer
+     |
+     = note: expected enum `std::option::Option<usize>`
+                found type `{integer}`
+help: try wrapping the expression in `Some`
+     |
+1188 |             field_radius_m: 15.0, grid_resolution: Some(16),
+     |                                                    +++++  +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1203:27
+     |
+1203 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                           ^^^ expected `Option<f64>`, found floating-poi
+nt number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1203 |             observer_x_m: Some(0.0), observer_y_m: 0.0, observer_z_m: 0.
+0,
+     |                           +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1203:46
+     |
+1203 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                                              ^^^ expected `Option<f64>`,
+ found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1203 |             observer_x_m: 0.0, observer_y_m: Some(0.0), observer_z_m: 0.
+0,
+     |                                              +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1203:65
+     |
+1203 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: 0.0,
+     |                                                                 ^^^ expe
+cted `Option<f64>`, found floating-point number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1203 |             observer_x_m: 0.0, observer_y_m: 0.0, observer_z_m: Some(0.0
+),
+     |                                                                 +++++   
++
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1204:29
+     |
+1204 |             field_radius_m: 5.0, grid_resolution: 4,
+     |                             ^^^ expected `Option<f64>`, found floating-p
+oint number
+     |
+     = note: expected enum `std::option::Option<f64>`
+                found type `{float}`
+help: try wrapping the expression in `Some`
+     |
+1204 |             field_radius_m: Some(5.0), grid_resolution: 4,
+     |                             +++++   +
+
+error[E0308]: mismatched types
+    --> src\acoustic_experience.rs:1204:51
+     |
+1204 |             field_radius_m: 5.0, grid_resolution: 4,
+     |                                                   ^ expected `Option<usi
+ze>`, found integer
+     |
+     = note: expected enum `std::option::Option<usize>`
+                found type `{integer}`
+help: try wrapping the expression in `Some`
+     |
+1204 |             field_radius_m: 5.0, grid_resolution: Some(4),
+     |                                                   +++++ +
+
+warning: unused variable: `n`
+   --> src\acoustic_analyzer.rs:252:19
+    |
+252 |         m: usize, n: usize, lambda: f64, a: f64, grid_size: usize,
+    |                   ^ help: if this is intentional, prefix it with an under
+score: `_n`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defau
+lt
+
+warning: variable `total_amp` is assigned to, but never used
+   --> src\acoustic_analyzer.rs:515:21
+    |
+515 |                 let mut total_amp = 0.0;
+    |                     ^^^^^^^^^^^^^
+    |
+    = note: consider using `_total_amp` instead
+
+warning: value assigned to `total_amp` is never read
+   --> src\acoustic_analyzer.rs:543:21
+    |
+543 |                     total_amp += amp;
+    |                     ^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by def
+ault
+
+warning: unused variable: `ac`
+   --> src\acoustic_analyzer.rs:575:9
+    |
+575 |         ac: &AcousticsConfig,
+    |         ^^ help: if this is intentional, prefix it with an underscore: `_
+ac`
+
+Some errors have detailed explanations: E0061, E0063, E0277, E0308, E0422, E059
+9, E0609.
+For more information about an error, try `rustc --explain E0061`.
+warning: `bronze-drum-system` (bin "bronze-drum-server" test) generated 13 warn
+ings
+error: could not compile `bronze-drum-system` (bin "bronze-drum-server" test) d
+ue to 53 previous errors; 13 warnings emitted

@@ -1,0 +1,41 @@
+﻿cargo :     Updating crates.io index
+所在位置 行:1 字符: 49
++ ... 29\backend ; cargo test --lib acoustic_experience::tests 2>&1 | Out-F ...
++                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (    Updating crates.io index:Stri 
+   ng) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+     Locking 20 packages to latest compatible versions
+      Adding cfg_aliases v0.2.1
+      Adding lru-slab v0.1.2
+      Adding quinn v0.11.9
+      Adding quinn-proto v0.11.14
+      Adding quinn-udp v0.5.14
+      Adding rand v0.9.4
+      Adding rand_chacha v0.9.0
+      Adding rand_core v0.9.5
+      Adding reqwest v0.12.28 (available: v0.13.4)
+      Adding rustc-hash v2.1.2
+      Adding thiserror v2.0.18
+      Adding thiserror-impl v2.0.18
+      Adding tinyvec v1.11.0
+      Adding tinyvec_macros v0.1.1
+      Adding tokio-stream v0.1.18
+      Adding tokio-test v0.4.5
+      Adding tower-http v0.6.11
+      Adding wasm-bindgen-futures v0.4.75
+      Adding web-time v1.1.0
+      Adding webpki-roots v1.0.7
+ Downloading crates ...
+  Downloaded cfg_aliases v0.2.1
+  Downloaded lru-slab v0.1.2
+  Downloaded quinn v0.11.9
+  Downloaded quinn-udp v0.5.14
+  Downloaded reqwest v0.12.28
+  Downloaded quinn-proto v0.11.14
+  Downloaded rustc-hash v2.1.2
+  Downloaded tokio-test v0.4.5
+  Downloaded tower-http v0.6.11
+  Downloaded webpki-roots v1.0.7
+error: no library targets found in package `bronze-drum-system`
