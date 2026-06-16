@@ -182,6 +182,7 @@ async fn main() -> anyhow::Result<()> {
         .route("/api/experience/cross-era", post(api::cross_era_comparison))
         .route("/api/experience/ritual-soundfield", post(api::ritual_sound_field))
         .route("/api/experience/virtual-tap", post(api::virtual_tap))
+        .route("/api/experience/virtual-ensemble", post(api::virtual_ensemble))
         .with_state(app_state.clone())
         .layer(
             CorsLayer::new()

@@ -72,7 +72,8 @@ impl AcousticExperienceService {
         let library = self.get_ethnic_drum_library();
         let entry = library.iter().find(|e| e.drum_id == drum_id)?;
 
-        let (alloy, thickness_profile, avg_thickness, cultural, uses) = match drum_id {
+        let (alloy, thickness_profile, avg_thickness, cultural, uses,
+             shell_curvature, thick_center, thick_edge, casting, roughness) = match drum_id {
             "zhuang-dagu" => (
                 AlloyComposition {
                     copper_pct: 82.0, tin_pct: 12.0, lead_pct: 4.5, zinc_pct: 0.8, other_impurities_pct: 0.7,
@@ -81,6 +82,7 @@ impl AcousticExperienceService {
                 4.5,
                 "壮族先民视铜鼓为雷王化身，蛙纹象征雨水与丰收。".to_string(),
                 vec!["祭祀雷王".to_string(), "祈雨仪式".to_string(), "丰收庆典".to_string(), "丧葬礼仪".to_string()],
+                2.5, 5.8, 3.2, "泥范法失蜡铸造".to_string(), 15.0,
             ),
             "zhuang-magu" => (
                 AlloyComposition {
@@ -90,6 +92,7 @@ impl AcousticExperienceService {
                 3.2,
                 "麻江型铜鼓是广西壮族地区最常见的类型，纹饰精美。".to_string(),
                 vec!["民间祭祀".to_string(), "婚丧嫁娶".to_string(), "节日庆典".to_string(), "铜鼓舞".to_string()],
+                1.8, 3.5, 3.0, "泥范法合范铸造".to_string(), 20.0,
             ),
             "miao-dagu" => (
                 AlloyComposition {
@@ -99,6 +102,7 @@ impl AcousticExperienceService {
                 5.0,
                 "苗族铜鼓是牯藏节的核心礼器，每十三年举办一次。".to_string(),
                 vec!["牯藏大典".to_string(), "祭祖仪式".to_string(), "丧葬送魂".to_string(), "芦笙伴奏".to_string()],
+                2.2, 4.0, 6.5, "泥范法分段铸造".to_string(), 25.0,
             ),
             "miao-xiaogu" => (
                 AlloyComposition {
@@ -108,6 +112,7 @@ impl AcousticExperienceService {
                 2.5,
                 "小型铜鼓便于携带，是苗族跳月活动的重要乐器。".to_string(),
                 vec!["跳月舞".to_string(), "青年社交".to_string(), "节日娱乐".to_string(), "芦笙合奏".to_string()],
+                1.2, 2.8, 2.5, "整体失蜡铸造".to_string(), 12.0,
             ),
             "yao-dagu" => (
                 AlloyComposition {
@@ -117,6 +122,7 @@ impl AcousticExperienceService {
                 4.8,
                 "瑶族铜鼓与长鼓并称，盘王节中铜鼓指挥长鼓节奏。".to_string(),
                 vec!["盘王节祭祀".to_string(), "长鼓舞伴奏".to_string(), "耍歌堂".to_string(), "驱邪仪式".to_string()],
+                2.0, 6.0, 3.5, "泥范法失蜡铸造".to_string(), 18.0,
             ),
             "yao-guzai" => (
                 AlloyComposition {
@@ -126,6 +132,7 @@ impl AcousticExperienceService {
                 2.0,
                 "铜鼓仔音色明亮清脆，是瑶族儿童游戏和青年对歌的伴奏乐器。".to_string(),
                 vec!["喜庆节日".to_string(), "歌堂伴奏".to_string(), "儿童游戏".to_string(), "信号传递".to_string()],
+                0.9, 2.2, 2.0, "整体失蜡铸造".to_string(), 10.0,
             ),
             _ => return None,
         };
@@ -154,6 +161,11 @@ impl AcousticExperienceService {
             avg_thickness_mm: avg_thickness,
             cultural_significance: cultural,
             traditional_uses: uses,
+            shell_curvature_radius_m: shell_curvature,
+            thickness_center_mm: thick_center,
+            thickness_edge_mm: thick_edge,
+            casting_method: casting,
+            surface_roughness_um: roughness,
         })
     }
 
@@ -166,13 +178,24 @@ impl AcousticExperienceService {
         let e = 1.1e11_f64;
         let d = e * h.powi(3) / (12.0 * (1.0 - nu.powi(2)));
 
+        let curvature_factor = 1.0 + 0.15 * (a / drum.shell_curvature_radius_m.max(0.1));
+        let thickness_taper = if drum.thickness_center_mm > drum.thickness_edge_mm {
+            1.0 + 0.08 * (drum.thickness_center_mm - drum.thickness_edge_mm) / drum.avg_thickness_mm.max(0.1)
+        } else if drum.thickness_edge_mm > drum.thickness_center_mm {
+            1.0 - 0.05 * (drum.thickness_edge_mm - drum.thickness_center_mm) / drum.avg_thickness_mm.max(0.1)
+        } else {
+            1.0
+        };
+        let roughness_damping = 0.001 * (drum.surface_roughness_um / 10.0).min(5.0);
+
         ac.eigenvalues_lambda
             .iter()
             .filter(|e| e.m <= 4 && e.n <= 4)
             .map(|e| {
-                let f = e.lambda.powi(2) / (2.0 * std::f64::consts::PI * a.powi(2))
+                let f_raw = e.lambda.powi(2) / (2.0 * std::f64::consts::PI * a.powi(2))
                     * (d / (rho * h)).sqrt();
-                let damping = 0.005 + (e.n as f64) * 0.002;
+                let f = f_raw * curvature_factor * thickness_taper;
+                let damping = 0.005 + (e.n as f64) * 0.002 + roughness_damping;
                 (e.m, e.n, f, damping)
             })
             .take(15)
@@ -326,8 +349,45 @@ impl AcousticExperienceService {
 
     pub fn get_timpani_profile(&self, size_inches: f64) -> TimpaniDrumProfile {
         let diameter_cm = size_inches * 2.54;
-        let fundamental = 523.25 * (29.0 / size_inches).sqrt();
-        let freq_range = (fundamental * 0.75, fundamental * 1.33);
+
+        let (fundamental, freq_range, tension, damping, harmonics, bowl_depth, membrane,
+             standard_ref) = match size_inches {
+            s if s <= 23.0 => {
+                let f = 523.25 * (29.0 / s.max(20.0)).sqrt();
+                (f, (f * 0.75, f * 1.33), 12000.0, 0.008,
+                 vec![1.0, 1.51, 1.99, 2.47, 2.92, 3.38],
+                 s * 0.6, "小牛皮膜".to_string(),
+                 "ISO 285:20\"/23\" 高音定音鼓".to_string())
+            }
+            s if s <= 26.0 => {
+                let f = 523.25 * (29.0 / s).sqrt();
+                (f, (f * 0.78, f * 1.30), 10000.0, 0.009,
+                 vec![1.0, 1.55, 2.0, 2.46, 2.91, 3.39],
+                 s * 0.55, "聚酯薄膜".to_string(),
+                 "ISO 285:25\"/26\" 中高音定音鼓".to_string())
+            }
+            s if s <= 29.0 => {
+                let f = 523.25 * (29.0 / s).sqrt();
+                (f, (f * 0.80, f * 1.28), 8500.0, 0.010,
+                 vec![1.0, 1.59, 2.0, 2.45, 2.9, 3.4],
+                 s * 0.50, "聚酯薄膜".to_string(),
+                 "ISO 285:28\"/29\" 中音定音鼓（标准尺寸）".to_string())
+            }
+            s if s <= 32.0 => {
+                let f = 523.25 * (29.0 / s).sqrt();
+                (f, (f * 0.82, f * 1.26), 7000.0, 0.012,
+                 vec![1.0, 1.62, 2.01, 2.44, 2.89, 3.41],
+                 s * 0.48, "聚酯薄膜".to_string(),
+                 "ISO 285:30\"/32\" 低音定音鼓".to_string())
+            }
+            _ => {
+                let f = 523.25 * (29.0 / size_inches).sqrt();
+                (f, (f * 0.84, f * 1.24), 5500.0, 0.015,
+                 vec![1.0, 1.65, 2.02, 2.43, 2.88, 3.42],
+                 size_inches * 0.45, "聚酯薄膜".to_string(),
+                 "ISO 285:>32\" 超低音定音鼓".to_string())
+            }
+        };
 
         TimpaniDrumProfile {
             name: format!("{}\" 定音鼓", size_inches),
@@ -335,10 +395,13 @@ impl AcousticExperienceService {
             diameter_cm,
             fundamental_freq_hz: fundamental,
             freq_range_hz: freq_range,
-            material: "聚酯薄膜鼓皮+铜制共鸣锅".to_string(),
-            tension_pascals: 8000.0,
-            damping_ratio: 0.01,
-            harmonic_structure: vec![1.0, 1.59, 2.0, 2.45, 2.9, 3.4],
+            material: format!("{}+铜制共鸣锅", membrane),
+            tension_pascals: tension,
+            damping_ratio: damping,
+            harmonic_structure: harmonics,
+            standard_reference: standard_ref,
+            bowl_depth_cm: bowl_depth,
+            membrane_type: membrane,
         }
     }
 
@@ -431,6 +494,11 @@ impl AcousticExperienceService {
         let observer_y = req.observer_y_m.unwrap_or(0.0);
         let observer_z = req.observer_z_m.unwrap_or(1.5);
 
+        let c0 = self.ac().air_sound_speed_ms;
+        let rho0 = self.ac().air_density_kgm3;
+        let ground_reflection_coeff = 0.8;
+        let humidity_pct = 50.0;
+
         let mut field_points = Vec::new();
 
         for theta_idx in 0..resolution {
@@ -442,25 +510,48 @@ impl AcousticExperienceService {
                 let y = field_radius * phi.cos() * theta.sin();
                 let z = field_radius * phi.sin();
 
+                let mut re_total = 0.0f64;
+                let mut im_total = 0.0f64;
                 let mut total_intensity = 0.0f64;
 
                 for placement in &req.drum_placements {
+                    let profile = self.get_ethnic_drum_profile(&placement.drum_id)
+                        .unwrap_or_else(|| self.get_ethnic_drum_profile("zhuang-dagu").unwrap());
+                    let power = self.estimate_sound_power(&profile) * placement.relative_volume;
+                    let modes = self.compute_modes_for_drum(&profile);
+                    let fund_freq = modes.first().map(|(_, _, f, _)| *f).unwrap_or(100.0);
+
                     let dx = x - placement.position_x_m;
                     let dy = y - placement.position_y_m;
                     let dz = z - placement.position_z_m;
                     let dist = (dx * dx + dy * dy + dz * dz).sqrt().max(0.5);
 
-                    let profile = self.get_ethnic_drum_profile(&placement.drum_id)
-                        .unwrap_or_else(|| self.get_ethnic_drum_profile("zhuang-dagu").unwrap());
-                    let power = self.estimate_sound_power(&profile) * placement.relative_volume;
+                    let alpha_db_km = 0.01 * fund_freq / 1000.0 * (1.0 + humidity_pct / 200.0);
+                    let air_absorption = (-alpha_db_km * dist / 8686.0).exp();
 
-                    let intensity = power / (4.0 * std::f64::consts::PI * dist * dist);
-                    total_intensity += intensity;
+                    let p_direct = (rho0 * c0 * power / (4.0 * std::f64::consts::PI * dist * dist)).sqrt();
+                    let p_direct_atten = p_direct * air_absorption;
+
+                    let k = 2.0 * std::f64::consts::PI * fund_freq / c0;
+                    let phase_direct = k * dist + 2.0 * std::f64::consts::PI * placement.strike_phase_offset_s * fund_freq;
+                    re_total += p_direct_atten * phase_direct.cos();
+                    im_total += p_direct_atten * phase_direct.sin();
+                    total_intensity += p_direct_atten * p_direct_atten / (rho0 * c0);
+
+                    let dz_mirror = z + placement.position_z_m;
+                    let dist_mirror = (dx * dx + dy * dy + dz_mirror * dz_mirror).sqrt().max(0.5);
+                    let air_abs_mirror = (-alpha_db_km * dist_mirror / 8686.0).exp();
+                    let p_reflect = (rho0 * c0 * power / (4.0 * std::f64::consts::PI * dist_mirror * dist_mirror)).sqrt()
+                        * ground_reflection_coeff * air_abs_mirror;
+                    let phase_reflect = k * dist_mirror + std::f64::consts::PI
+                        + 2.0 * std::f64::consts::PI * placement.strike_phase_offset_s * fund_freq;
+                    re_total += p_reflect * phase_reflect.cos();
+                    im_total += p_reflect * phase_reflect.sin();
                 }
 
+                let p_rms = (re_total * re_total + im_total * im_total).sqrt();
                 let p_ref = 2e-5;
-                let spl = if total_intensity > 1e-12 {
-                    let p_rms = (total_intensity * self.ac().air_density_kgm3 * self.ac().air_sound_speed_ms).sqrt();
+                let spl = if p_rms > 1e-12 {
                     20.0 * (p_rms / p_ref).log10()
                 } else {
                     0.0
@@ -485,22 +576,42 @@ impl AcousticExperienceService {
 
         let mut observer_spl = 0.0;
         if !req.drum_placements.is_empty() {
-            let mut observer_intensity = 0.0;
+            let mut re_obs = 0.0f64;
+            let mut im_obs = 0.0f64;
             for placement in &req.drum_placements {
+                let profile = self.get_ethnic_drum_profile(&placement.drum_id)
+                    .unwrap_or_else(|| self.get_ethnic_drum_profile("zhuang-dagu").unwrap());
+                let power = self.estimate_sound_power(&profile) * placement.relative_volume;
+                let modes = self.compute_modes_for_drum(&profile);
+                let fund_freq = modes.first().map(|(_, _, f, _)| *f).unwrap_or(100.0);
+
                 let dx = observer_x - placement.position_x_m;
                 let dy = observer_y - placement.position_y_m;
                 let dz = observer_z - placement.position_z_m;
                 let dist = (dx * dx + dy * dy + dz * dz).sqrt().max(0.5);
 
-                let profile = self.get_ethnic_drum_profile(&placement.drum_id)
-                    .unwrap_or_else(|| self.get_ethnic_drum_profile("zhuang-dagu").unwrap());
-                let power = self.estimate_sound_power(&profile) * placement.relative_volume;
+                let alpha_db_km = 0.01 * fund_freq / 1000.0 * (1.0 + humidity_pct / 200.0);
+                let air_abs = (-alpha_db_km * dist / 8686.0).exp();
 
-                observer_intensity += power / (4.0 * std::f64::consts::PI * dist * dist);
+                let p_direct = (rho0 * c0 * power / (4.0 * std::f64::consts::PI * dist * dist)).sqrt() * air_abs;
+                let k = 2.0 * std::f64::consts::PI * fund_freq / c0;
+                let phase = k * dist + 2.0 * std::f64::consts::PI * placement.strike_phase_offset_s * fund_freq;
+                re_obs += p_direct * phase.cos();
+                im_obs += p_direct * phase.sin();
+
+                let dz_mirror = observer_z + placement.position_z_m;
+                let dist_mirror = (dx * dx + dy * dy + dz_mirror * dz_mirror).sqrt().max(0.5);
+                let air_abs_m = (-alpha_db_km * dist_mirror / 8686.0).exp();
+                let p_reflect = (rho0 * c0 * power / (4.0 * std::f64::consts::PI * dist_mirror * dist_mirror)).sqrt()
+                    * ground_reflection_coeff * air_abs_m;
+                let phase_r = k * dist_mirror + std::f64::consts::PI
+                    + 2.0 * std::f64::consts::PI * placement.strike_phase_offset_s * fund_freq;
+                re_obs += p_reflect * phase_r.cos();
+                im_obs += p_reflect * phase_r.sin();
             }
-            if observer_intensity > 1e-12 {
-                let p_rms = (observer_intensity * self.ac().air_density_kgm3 * self.ac().air_sound_speed_ms).sqrt();
-                observer_spl = 20.0 * (p_rms / 2e-5).log10();
+            let p_obs = (re_obs * re_obs + im_obs * im_obs).sqrt();
+            if p_obs > 1e-12 {
+                observer_spl = 20.0 * (p_obs / 2e-5).log10();
             }
         }
 
@@ -518,10 +629,15 @@ impl AcousticExperienceService {
             let time = t as f64 * 0.03;
             let mut amp = 0.0;
             for placement in &req.drum_placements {
+                let profile = self.get_ethnic_drum_profile(&placement.drum_id)
+                    .unwrap_or_else(|| self.get_ethnic_drum_profile("zhuang-dagu").unwrap());
+                let modes = self.compute_modes_for_drum(&profile);
+                let decay_tau = 2.0 + profile.diameter_cm / 80.0;
+
                 let phase = placement.strike_phase_offset_s;
                 let dt = time - phase;
                 if dt >= 0.0 {
-                    let env = (-dt / 2.0).exp() * (1.0 - (-dt / 0.01).exp());
+                    let env = (-dt / decay_tau).exp() * (1.0 - (-dt / 0.01).exp());
                     amp += env * placement.relative_volume;
                 }
             }
@@ -852,6 +968,98 @@ impl AcousticExperienceService {
                 result *= i as f64;
             }
             result
+        }
+    }
+
+    pub fn virtual_ensemble(&self, req: EnsembleTapRequest) -> EnsembleTapResult {
+        let tempo_bpm = req.tempo_bpm.unwrap_or(60.0);
+        let beat_interval = 60.0 / tempo_bpm;
+
+        let mut individual_results = Vec::new();
+        let mut aligned_taps: Vec<(f64, VirtualTapResult)> = Vec::new();
+
+        for (idx, tap_req) in req.taps.iter().enumerate() {
+            if let Some(result) = self.virtual_tap(tap_req.clone()) {
+                let phase_offset = match req.rhythm_pattern.as_deref() {
+                    Some("unison") => 0.0,
+                    Some("staggered") => beat_interval * 0.25 * (idx as f64 % 4.0),
+                    Some("call_response") => {
+                        if idx % 2 == 0 { 0.0 } else { beat_interval * 0.5 }
+                    }
+                    Some("polyrhythm") => beat_interval * (idx as f64) / (req.taps.len().max(1) as f64),
+                    _ => beat_interval * (idx as f64 % 3.0) * 0.33,
+                };
+                aligned_taps.push((phase_offset, result.clone()));
+                individual_results.push(result);
+            }
+        }
+
+        let num_taps = aligned_taps.len().max(1);
+        let mut beat_intervals = Vec::new();
+        for i in 1..num_taps {
+            beat_intervals.push(beat_interval * (i as f64 / num_taps as f64));
+        }
+
+        let max_duration = aligned_taps.iter()
+            .map(|(offset, r)| offset + r.decay_time_s)
+            .fold(0.0f64, f64::max)
+            .max(3.0);
+
+        let num_bins = 600;
+        let max_f = 3000.0;
+        let bin_size = max_f / num_bins as f64;
+        let mut mixed = vec![0.0f64; num_bins];
+
+        for (_offset, result) in &aligned_taps {
+            for sb in &result.spectrum {
+                let bin_idx = ((sb.frequency_hz - bin_size * 0.5) / bin_size) as usize;
+                if bin_idx < num_bins {
+                    let amp = if sb.amplitude_db > -60.0 {
+                        10.0_f64.powf(sb.amplitude_db / 20.0)
+                    } else {
+                        0.0
+                    };
+                    mixed[bin_idx] += amp / (num_taps as f64).sqrt();
+                }
+            }
+        }
+
+        let mixed_spectrum: Vec<SpectrumBin> = mixed
+            .iter()
+            .enumerate()
+            .map(|(i, &amp)| SpectrumBin {
+                frequency_hz: (i as f64 + 0.5) * bin_size,
+                amplitude_db: if amp > 1e-10 { 20.0 * amp.log10() + 80.0 } else { -60.0 },
+            })
+            .collect();
+
+        let num_time_steps = 200;
+        let dt = max_duration / num_time_steps as f64;
+        let mut combined_envelope = Vec::new();
+        for step in 0..num_time_steps {
+            let time = step as f64 * dt;
+            let mut amp_sum = 0.0;
+            for (offset, result) in &aligned_taps {
+                let local_t = time - offset;
+                if local_t >= 0.0 && local_t < result.amplitude_envelope.last().map(|e| e.0).unwrap_or(3.0) {
+                    if let Some(env_pair) = result.amplitude_envelope.iter().find(|(t, _)| *t >= local_t) {
+                        amp_sum += env_pair.1;
+                    }
+                }
+            }
+            combined_envelope.push((time, amp_sum));
+        }
+
+        let synchronized = !aligned_taps.is_empty()
+            && aligned_taps.iter().all(|(offset, _)| offset.abs() < 0.01);
+
+        EnsembleTapResult {
+            individual_results,
+            mixed_spectrum,
+            combined_envelope,
+            synchronized,
+            beat_intervals_s: beat_intervals,
+            total_duration_s: max_duration,
         }
     }
 }
@@ -1204,5 +1412,154 @@ mod tests {
             assert!(sfp.pressure_pa.is_finite(),
                 "pressure must be finite at every point");
         }
+    }
+
+    #[test]
+    fn test_field_survey_fields_present() {
+        let s = make_test_service();
+        for did in ["zhuang-dagu", "miao-dagu", "yao-guzai"] {
+            let p = s.get_ethnic_drum_profile(did).unwrap();
+            assert!(p.shell_curvature_radius_m > 0.0,
+                "{}: shell_curvature_radius_m must be positive", did);
+            assert!(p.thickness_center_mm > 0.0,
+                "{}: thickness_center_mm must be positive", did);
+            assert!(p.thickness_edge_mm > 0.0,
+                "{}: thickness_edge_mm must be positive", did);
+            assert!(!p.casting_method.is_empty(),
+                "{}: casting_method must not be empty", did);
+            assert!(p.surface_roughness_um >= 0.0,
+                "{}: surface_roughness_um must be non-negative", did);
+        }
+    }
+
+    #[test]
+    fn test_curvature_and_taper_affect_modes() {
+        let s = make_test_service();
+        let zhuang = s.get_ethnic_drum_profile("zhuang-dagu").unwrap();
+        let yao = s.get_ethnic_drum_profile("yao-dagu").unwrap();
+        let z_modes = s.compute_modes_for_drum(&zhuang);
+        let y_modes = s.compute_modes_for_drum(&yao);
+        assert!(!z_modes.is_empty() && !y_modes.is_empty());
+        let z_f0 = z_modes[0].2;
+        let y_f0 = y_modes[0].2;
+        assert!(z_f0 > 0.0 && y_f0 > 0.0,
+            "curvature+taper corrected frequencies must be positive");
+    }
+
+    #[test]
+    fn test_timpani_profile_iso_standard() {
+        let s = make_test_service();
+        for size in [20.0, 23.0, 26.0, 29.0, 32.0, 35.0] {
+            let tp = s.get_timpani_profile(size);
+            assert!(!tp.standard_reference.is_empty(),
+                "{}in: standard_reference must not be empty", size);
+            assert!(tp.bowl_depth_cm > 0.0,
+                "{}in: bowl_depth_cm must be positive", size);
+            assert!(!tp.membrane_type.is_empty(),
+                "{}in: membrane_type must not be empty", size);
+            assert!(tp.tension_pascals > 0.0,
+                "{}in: tension_pascals must be positive", size);
+            assert!(tp.damping_ratio > 0.0 && tp.damping_ratio < 0.1,
+                "{}in: damping_ratio should be in realistic range", size);
+        }
+    }
+
+    #[test]
+    fn test_timpani_larger_has_lower_tension_higher_damping() {
+        let s = make_test_service();
+        let small = s.get_timpani_profile(20.0);
+        let large = s.get_timpani_profile(32.0);
+        assert!(small.tension_pascals > large.tension_pascals,
+            "smaller timpani should have higher tension");
+        assert!(large.damping_ratio > small.damping_ratio,
+            "larger timpani should have higher damping");
+    }
+
+    #[test]
+    fn test_ritual_soundfield_has_ground_reflection_effect() {
+        let s = make_test_service();
+        let req = RitualSoundFieldRequest {
+            drum_placements: vec![RitualDrumPlacement {
+                drum_id: "zhuang-dagu".into(),
+                position_x_m: 0.0, position_y_m: 0.0, position_z_m: 1.0,
+                relative_volume: 1.0, strike_phase_offset_s: 0.0,
+            }],
+            observer_x_m: Some(5.0), observer_y_m: Some(0.0), observer_z_m: Some(1.5),
+            field_radius_m: Some(10.0), grid_resolution: Some(6),
+        };
+        let r = s.ritual_sound_field(req);
+        assert!(r.observer_spl_db > 0.0, "observer SPL should be positive with ground reflection");
+        assert!(r.observer_spl_db.is_finite(), "observer SPL must be finite (no NaN from interference)");
+        for sfp in &r.sound_field {
+            assert!(sfp.spl_db.is_finite(),
+                "interference pattern must not produce NaN");
+        }
+    }
+
+    #[test]
+    fn test_virtual_ensemble_unison() {
+        let s = make_test_service();
+        let req = EnsembleTapRequest {
+            taps: vec![
+                VirtualTapRequest {
+                    drum_id: "zhuang-dagu".into(), x_frac: 0.5, y_frac: 0.5,
+                    strike_force: 1.0, striker_type: None,
+                },
+                VirtualTapRequest {
+                    drum_id: "miao-dagu".into(), x_frac: 0.5, y_frac: 0.5,
+                    strike_force: 0.8, striker_type: None,
+                },
+            ],
+            tempo_bpm: Some(60.0),
+            rhythm_pattern: Some("unison".into()),
+        };
+        let r = s.virtual_ensemble(req);
+        assert_eq!(r.individual_results.len(), 2);
+        assert!(!r.mixed_spectrum.is_empty(), "mixed spectrum must not be empty");
+        assert!(!r.combined_envelope.is_empty());
+        assert!(r.synchronized, "unison pattern should be synchronized");
+        assert!(r.total_duration_s > 0.0);
+        assert!(!r.beat_intervals_s.is_empty());
+    }
+
+    #[test]
+    fn test_virtual_ensemble_empty_taps() {
+        let s = make_test_service();
+        let req = EnsembleTapRequest {
+            taps: vec![],
+            tempo_bpm: None,
+            rhythm_pattern: None,
+        };
+        let r = s.virtual_ensemble(req);
+        assert!(r.individual_results.is_empty());
+        assert!(r.total_duration_s > 0.0, "should have default duration even with no taps");
+    }
+
+    #[test]
+    fn test_virtual_ensemble_polyrhythm() {
+        let s = make_test_service();
+        let req = EnsembleTapRequest {
+            taps: vec![
+                VirtualTapRequest {
+                    drum_id: "zhuang-dagu".into(), x_frac: 0.3, y_frac: 0.3,
+                    strike_force: 1.0, striker_type: None,
+                },
+                VirtualTapRequest {
+                    drum_id: "yao-dagu".into(), x_frac: 0.7, y_frac: 0.5,
+                    strike_force: 1.0, striker_type: None,
+                },
+                VirtualTapRequest {
+                    drum_id: "miao-xiaogu".into(), x_frac: 0.5, y_frac: 0.7,
+                    strike_force: 0.9, striker_type: None,
+                },
+            ],
+            tempo_bpm: Some(120.0),
+            rhythm_pattern: Some("polyrhythm".into()),
+        };
+        let r = s.virtual_ensemble(req);
+        assert_eq!(r.individual_results.len(), 3);
+        assert!(!r.synchronized, "polyrhythm should not be fully synchronized");
+        let max_env = r.combined_envelope.iter().map(|(_, a)| *a).fold(0.0f64, f64::max);
+        assert!(max_env > 0.0, "envelope must have positive amplitude");
     }
 }

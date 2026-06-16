@@ -493,3 +493,72 @@ async fn test_19_original_apis_not_broken() {
         eprintln!("skip: /api/drums status={status} (likely no ClickHouse)");
     }
 }
+
+#[tokio::test]
+async fn test_20_virtual_ensemble_unison_synchronization() {
+    require_server!();
+    let body = json!({
+        "taps": [
+            {"drum_id": "zhuang-dagu", "x_frac": 0.5, "y_frac": 0.5, "strike_force": 1.0},
+            {"drum_id": "miao-dagu", "x_frac": 0.5, "y_frac": 0.5, "strike_force": 0.8},
+            {"drum_id": "yao-dagu", "x_frac": 0.5, "y_frac": 0.5, "strike_force": 0.9}
+        ],
+        "tempo_bpm": 60.0,
+        "rhythm_pattern": "unison"
+    });
+    let d = must_post_ok(
+        &format!("{BASE}/api/experience/virtual-ensemble"), body).await;
+    assert_eq!(d["individual_results"].as_array().unwrap().len(), 3);
+    assert!(d["synchronized"].as_bool().unwrap(),
+        "unison pattern must be synchronized");
+    assert!(!d["mixed_spectrum"].as_array().unwrap().is_empty());
+    assert!(!d["combined_envelope"].as_array().unwrap().is_empty());
+    assert!(d["total_duration_s"].as_f64().unwrap() > 0.0);
+}
+
+#[tokio::test]
+async fn test_21_virtual_ensemble_polyrhythm_async() {
+    require_server!();
+    let body = json!({
+        "taps": [
+            {"drum_id": "zhuang-dagu", "x_frac": 0.3, "y_frac": 0.3, "strike_force": 1.0},
+            {"drum_id": "yao-guzai", "x_frac": 0.7, "y_frac": 0.5, "strike_force": 1.0}
+        ],
+        "tempo_bpm": 120.0,
+        "rhythm_pattern": "polyrhythm"
+    });
+    let d = must_post_ok(
+        &format!("{BASE}/api/experience/virtual-ensemble"), body).await;
+    assert_eq!(d["individual_results"].as_array().unwrap().len(), 2);
+    assert!(!d["synchronized"].as_bool().unwrap(),
+        "polyrhythm should not be fully synchronized");
+}
+
+#[tokio::test]
+async fn test_22_field_survey_data_in_profile() {
+    require_server!();
+    let d = must_get_ok(
+        &format!("{BASE}/api/experience/ethnic-drum/zhuang-dagu")).await;
+    assert!(d["shell_curvature_radius_m"].as_f64().unwrap() > 0.0,
+        "shell_curvature_radius_m must be positive");
+    assert!(d["thickness_center_mm"].as_f64().unwrap() > 0.0);
+    assert!(d["thickness_edge_mm"].as_f64().unwrap() > 0.0);
+    assert!(!d["casting_method"].as_str().unwrap().is_empty());
+    assert!(d["surface_roughness_um"].as_f64().unwrap() >= 0.0);
+}
+
+#[tokio::test]
+async fn test_23_timpani_iso_standard_fields() {
+    require_server!();
+    let body = json!({"drum_id": "zhuang-dagu", "timpani_size_inches": 29.0});
+    let d = must_post_ok(
+        &format!("{BASE}/api/experience/cross-era"), body).await;
+    let modern = &d["modern_drum"];
+    assert!(!modern["standard_reference"].as_str().unwrap().is_empty(),
+        "standard_reference must not be empty");
+    assert!(modern["bowl_depth_cm"].as_f64().unwrap() > 0.0);
+    assert!(!modern["membrane_type"].as_str().unwrap().is_empty());
+    let damping = modern["damping_ratio"].as_f64().unwrap();
+    assert!(damping > 0.0 && damping < 0.1,
+        "damping_ratio realistic: {damping}");
+}

@@ -316,6 +316,11 @@ pub struct EthnicDrumProfile {
     pub avg_thickness_mm: f64,
     pub cultural_significance: String,
     pub traditional_uses: Vec<String>,
+    pub shell_curvature_radius_m: f64,
+    pub thickness_center_mm: f64,
+    pub thickness_edge_mm: f64,
+    pub casting_method: String,
+    pub surface_roughness_um: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -329,6 +334,9 @@ pub struct TimpaniDrumProfile {
     pub tension_pascals: f64,
     pub damping_ratio: f64,
     pub harmonic_structure: Vec<f64>,
+    pub standard_reference: String,
+    pub bowl_depth_cm: f64,
+    pub membrane_type: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -444,6 +452,23 @@ pub struct WebAudioParams {
     pub filter_cutoff_hz: f64,
     pub filter_q: f64,
     pub overall_gain: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EnsembleTapRequest {
+    pub taps: Vec<VirtualTapRequest>,
+    pub tempo_bpm: Option<f64>,
+    pub rhythm_pattern: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EnsembleTapResult {
+    pub individual_results: Vec<VirtualTapResult>,
+    pub mixed_spectrum: Vec<SpectrumBin>,
+    pub combined_envelope: Vec<(f64, f64)>,
+    pub synchronized: bool,
+    pub beat_intervals_s: Vec<f64>,
+    pub total_duration_s: f64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

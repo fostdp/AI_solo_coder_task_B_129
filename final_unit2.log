@@ -1,0 +1,183 @@
+﻿cargo : warning: unused import: `mpsc`
+所在位置 行:1 字符: 115
++ ... TRACE="1" ; cargo test --bin bronze-drum-server acoustic_experience:: ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (warning: unused import: `mpsc`:St 
+   ring) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ --> src\mqtt_client.rs:5:30
+  |
+5 | use tokio::sync::{broadcast, mpsc};
+  |                              ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `DtuEvent`
+ --> src\api.rs:5:27
+  |
+5 | use crate::dtu_receiver::{DtuEvent, DtuReceiver};
+  |                           ^^^^^^^^
+
+warning: unused import: `IntoResponse`
+  --> src\api.rs:10:16
+   |
+10 |     response::{IntoResponse, Response},
+   |                ^^^^^^^^^^^^
+
+warning: unused import: `mpsc`
+  --> src\api.rs:15:19
+   |
+15 | use tokio::sync::{mpsc, oneshot};
+   |                   ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\casting_simulator.rs:6:15
+  |
+6 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\acoustic_analyzer.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug` and `warn`
+ --> src\alarm_mqtt.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^               ^^^^
+
+warning: unused import: `uuid::Uuid`
+  --> src\alarm_mqtt.rs:10:5
+   |
+10 | use uuid::Uuid;
+   |     ^^^^^^^^^^
+
+warning: unused import: `chrono::Utc`
+  --> src\alarm_mqtt.rs:11:5
+   |
+11 | use chrono::Utc;
+   |     ^^^^^^^^^^^
+
+warning: unused variable: `n`
+   --> src\acoustic_analyzer.rs:252:19
+    |
+252 |         m: usize, n: usize, lambda: f64, a: f64, grid_size: usize,
+    |                   ^ help: if this is intentional, prefix it with an under
+score: `_n`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defau
+lt
+
+warning: variable `total_amp` is assigned to, but never used
+   --> src\acoustic_analyzer.rs:515:21
+    |
+515 |                 let mut total_amp = 0.0;
+    |                     ^^^^^^^^^^^^^
+    |
+    = note: consider using `_total_amp` instead
+
+warning: value assigned to `total_amp` is never read
+   --> src\acoustic_analyzer.rs:543:21
+    |
+543 |                     total_amp += amp;
+    |                     ^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by def
+ault
+
+warning: unused variable: `ac`
+   --> src\acoustic_analyzer.rs:575:9
+    |
+575 |         ac: &AcousticsConfig,
+    |         ^^ help: if this is intentional, prefix it with an underscore: `_
+ac`
+
+warning: unused variable: `modes`
+   --> src\acoustic_experience.rs:634:21
+    |
+634 |                 let modes = self.compute_modes_for_drum(&profile);
+    |                     ^^^^^ help: if this is intentional, prefix it with an
+ underscore: `_modes`
+
+warning: field `url` is never read
+   --> src\clickhouse_client.rs:121:5
+    |
+119 | pub struct ClickHouseClient {
+    |            ---------------- field in this struct
+120 |     client: Client,
+121 |     url: String,
+    |     ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `config` is never read
+  --> src\dtu_receiver.rs:24:5
+   |
+23 | pub struct DtuReceiver {
+   |            ----------- field in this struct
+24 |     config: Arc<AppConfig>,
+   |     ^^^^^^
+   |
+   = note: `DtuReceiver` has derived impls for the traits `Clone` and `Debug`, 
+but these are intentionally ignored during dead code analysis
+
+warning: field `config` is never read
+  --> src\acoustic_analyzer.rs:50:5
+   |
+49 | pub struct AcousticAnalyzerService {
+   |            ----------------------- field in this struct
+50 |     config: Arc<AppConfig>,
+   |     ^^^^^^
+
+warning: `bronze-drum-system` (bin "bronze-drum-server" test) generated 17 warn
+ings (run `cargo fix --bin "bronze-drum-server" -p bronze-drum-system --tests` 
+to apply 12 suggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running unittests src\main.rs (target\debug\deps\bronze_drum_server-3a5b98
+9682846223.exe)
+
+running 37 tests
+test acoustic_experience::tests::test_bessel_i_large_argument_no_panic ... ok
+test acoustic_experience::tests::test_bessel_i_m_ge_1_at_zero ... ok
+test acoustic_experience::tests::test_bessel_i_zero_order_at_zero ... ok
+test acoustic_experience::tests::test_bessel_j_boundary_x_zero_nonzero_m ... ok
+test acoustic_experience::tests::test_bessel_j_known_values ... ok
+test acoustic_experience::tests::test_bessel_j_large_m_and_x_no_panic ... ok
+test acoustic_experience::tests::test_bessel_j_zero_order_at_zero ... ok
+test acoustic_experience::tests::test_compare_ethnic_drums_includes_invalid ... ok
+test acoustic_experience::tests::test_compare_ethnic_drums_normal ... ok
+test acoustic_experience::tests::test_compare_ethnic_drums_single_element_edge ... ok
+test acoustic_experience::tests::test_compute_modes_produces_stable_frequencies ... ok
+test acoustic_experience::tests::test_cross_era_comparison_invalid_drum ... ok
+test acoustic_experience::tests::test_cross_era_comparison_normal ... ok
+test acoustic_experience::tests::test_cross_era_comparison_timpani_sizes_boundary ... ok
+test acoustic_experience::tests::test_curvature_and_taper_affect_modes ... ok
+test acoustic_experience::tests::test_ethnic_library_has_six_drums ... ok
+test acoustic_experience::tests::test_factorial_basic ... ok
+test acoustic_experience::tests::test_factorial_large_no_overflow ... ok
+test acoustic_experience::tests::test_factorial_negative_returns_one ... ok
+test acoustic_experience::tests::test_field_survey_fields_present ... ok
+test acoustic_experience::tests::test_get_lambda_boundary_m_large ... ok
+test acoustic_experience::tests::test_get_lambda_returns_valid ... ok
+test acoustic_experience::tests::test_get_profile_valid_and_invalid ... ok
+test acoustic_experience::tests::test_ritual_sound_field_empty_edge ... ok
+test acoustic_experience::tests::test_ritual_sound_field_large_grid_no_panic ... ok
+test acoustic_experience::tests::test_ritual_sound_field_multiple_drums ... ok
+test acoustic_experience::tests::test_ritual_sound_field_observer_coincident_with_drum_no_nan ... ok
+test acoustic_experience::tests::test_ritual_soundfield_has_ground_reflection_effect ... ok
+test acoustic_experience::tests::test_timpani_larger_has_lower_tension_higher_damping ... ok
+test acoustic_experience::tests::test_timpani_profile_iso_standard ... ok
+test acoustic_experience::tests::test_virtual_ensemble_empty_taps ... ok
+test acoustic_experience::tests::test_virtual_ensemble_polyrhythm ... ok
+test acoustic_experience::tests::test_virtual_ensemble_unison ... ok
+test acoustic_experience::tests::test_virtual_tap_center_is_sane ... ok
+test acoustic_experience::tests::test_virtual_tap_edge_vs_center_different ... ok
+test acoustic_experience::tests::test_virtual_tap_force_boundary_zero_and_high ... ok
+test acoustic_experience::tests::test_virtual_tap_outside_bounds_clamps ... ok
+
+test result: ok. 37 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

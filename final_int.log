@@ -1,0 +1,190 @@
+﻿cargo :    Compiling bronze-drum-system v1.0.0 (D:\SOLO-2\AI_solo_coder_task_B_
+129\backend)
+所在位置 行:1 字符: 89
++ ... 9\backend ; cargo test --test api_integration -- --test-threads=2 2>& ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling br..._B_129\backend) 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+warning: unused import: `mpsc`
+ --> src\mqtt_client.rs:5:30
+  |
+5 | use tokio::sync::{broadcast, mpsc};
+  |                              ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `DtuEvent`
+ --> src\api.rs:5:27
+  |
+5 | use crate::dtu_receiver::{DtuEvent, DtuReceiver};
+  |                           ^^^^^^^^
+
+warning: unused import: `IntoResponse`
+  --> src\api.rs:10:16
+   |
+10 |     response::{IntoResponse, Response},
+   |                ^^^^^^^^^^^^
+
+warning: unused import: `mpsc`
+  --> src\api.rs:15:19
+   |
+15 | use tokio::sync::{mpsc, oneshot};
+   |                   ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\casting_simulator.rs:6:15
+  |
+6 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\acoustic_analyzer.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug` and `warn`
+ --> src\alarm_mqtt.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^               ^^^^
+
+warning: unused import: `uuid::Uuid`
+  --> src\alarm_mqtt.rs:10:5
+   |
+10 | use uuid::Uuid;
+   |     ^^^^^^^^^^
+
+warning: unused import: `chrono::Utc`
+  --> src\alarm_mqtt.rs:11:5
+   |
+11 | use chrono::Utc;
+   |     ^^^^^^^^^^^
+
+warning: unused variable: `n`
+   --> src\acoustic_analyzer.rs:252:19
+    |
+252 |         m: usize, n: usize, lambda: f64, a: f64, grid_size: usize,
+    |                   ^ help: if this is intentional, prefix it with an under
+score: `_n`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defau
+lt
+
+warning: variable `total_amp` is assigned to, but never used
+   --> src\acoustic_analyzer.rs:515:21
+    |
+515 |                 let mut total_amp = 0.0;
+    |                     ^^^^^^^^^^^^^
+    |
+    = note: consider using `_total_amp` instead
+
+warning: value assigned to `total_amp` is never read
+   --> src\acoustic_analyzer.rs:543:21
+    |
+543 |                     total_amp += amp;
+    |                     ^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by def
+ault
+
+warning: unused variable: `ac`
+   --> src\acoustic_analyzer.rs:575:9
+    |
+575 |         ac: &AcousticsConfig,
+    |         ^^ help: if this is intentional, prefix it with an underscore: `_
+ac`
+
+warning: unused variable: `modes`
+   --> src\acoustic_experience.rs:634:21
+    |
+634 |                 let modes = self.compute_modes_for_drum(&profile);
+    |                     ^^^^^ help: if this is intentional, prefix it with an
+ underscore: `_modes`
+
+warning: field `url` is never read
+   --> src\clickhouse_client.rs:121:5
+    |
+119 | pub struct ClickHouseClient {
+    |            ---------------- field in this struct
+120 |     client: Client,
+121 |     url: String,
+    |     ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `config` is never read
+  --> src\dtu_receiver.rs:24:5
+   |
+23 | pub struct DtuReceiver {
+   |            ----------- field in this struct
+24 |     config: Arc<AppConfig>,
+   |     ^^^^^^
+   |
+   = note: `DtuReceiver` has derived impls for the traits `Clone` and `Debug`, 
+but these are intentionally ignored during dead code analysis
+
+warning: field `config` is never read
+  --> src\acoustic_analyzer.rs:50:5
+   |
+49 | pub struct AcousticAnalyzerService {
+   |            ----------------------- field in this struct
+50 |     config: Arc<AppConfig>,
+   |     ^^^^^^
+
+warning: associated items `get_lambda`, `bessel_j`, `bessel_i`, and `factorial`
+ are never used
+   --> src\acoustic_experience.rs:855:8
+    |
+  9 | impl AcousticExperienceService {
+    | ------------------------------ associated items in this implementation
+...
+855 |     fn get_lambda(&self, m: usize, n: usize) -> f64 {
+    |        ^^^^^^^^^^
+...
+903 |     fn bessel_j(m: i32, x: f64) -> f64 {
+    |        ^^^^^^^^
+...
+933 |     fn bessel_i(m: i32, x: f64) -> f64 {
+    |        ^^^^^^^^
+...
+961 |     fn factorial(n: f64) -> f64 {
+    |        ^^^^^^^^^
+
+warning: `bronze-drum-system` (bin "bronze-drum-server") generated 18 warnings 
+(run `cargo fix --bin "bronze-drum-server" -p bronze-drum-system` to apply 12 s
+uggestions)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.29s
+     Running tests\api_integration.rs (target\debug\deps\api_integration-56cd40
+6aa6a737e2.exe)
+
+running 23 tests
+test test_02_ethnic_library_returns_six_drums ... ok
+test test_01_health ... ok
+test test_04_compare_ethnic_drums_happy_path ... ok
+test test_03_ethnic_drum_profile_valid_and_invalid ... ok
+test test_05_compare_ethnic_drums_edge_single_element ... ok
+test test_06_compare_ethnic_drums_all_invalid_graceful ... ok
+test test_07_cross_era_happy_verify_pitch_accuracy ... ok
+test test_09_cross_era_invalid_drum_returns_not_found ... ok
+test test_10_cross_era_negative_size_handled ... ok
+test test_08_cross_era_boundary_sizes_monotonic_pitch ... ok
+test test_11_ritual_soundfield_verify_spl_reverberation ... ok
+test test_12_ritual_soundfield_edge_empty_placements ... ok
+test test_13_ritual_soundfield_observer_at_drum_no_inf ... ok
+test test_14_virtual_tap_musicality_center_vs_edge ... ok
+test test_16_virtual_tap_force_boundaries_musicality ... ok
+test test_15_virtual_tap_all_six_ethnic_drums ... ok
+test test_17_virtual_tap_invalid_location_and_drum ... ok
+test test_18_cors_preflight_works ... ok
+test test_20_virtual_ensemble_unison_synchronization ... ok
+test test_21_virtual_ensemble_polyrhythm_async ... ok
+test test_22_field_survey_data_in_profile ... ok
+test test_19_original_apis_not_broken ... ok
+test test_23_timpani_iso_standard_fields ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.35s
+

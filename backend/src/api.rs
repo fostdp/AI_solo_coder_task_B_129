@@ -518,3 +518,27 @@ pub async fn virtual_tap(
         }
     }
 }
+
+#[derive(Debug, Deserialize)]
+pub struct EnsembleTapRequest {
+    pub taps: Vec<VirtualTapRequest>,
+    pub tempo_bpm: Option<f64>,
+    pub rhythm_pattern: Option<String>,
+}
+
+pub async fn virtual_ensemble(
+    State(state): State<AppState>,
+    Json(req): Json<EnsembleTapRequest>,
+) -> Json<ApiResponse<EnsembleTapResult>> {
+    let start = std::time::Instant::now();
+    let ensemble_req = crate::models::EnsembleTapRequest {
+        taps: req.taps,
+        tempo_bpm: req.tempo_bpm,
+        rhythm_pattern: req.rhythm_pattern,
+    };
+    let result = state.acoustic_experience.virtual_ensemble(ensemble_req);
+    let elapsed = start.elapsed().as_secs_f64();
+    app_metrics::inc_http_request("POST", "/api/experience/virtual-ensemble", 200);
+    app_metrics::record_http_duration("POST", "/api/experience/virtual-ensemble", elapsed);
+    Json(ApiResponse::ok(result))
+}
