@@ -21,6 +21,11 @@ pub mod dtu_receiver;
 pub mod casting_simulator;
 pub mod acoustic_analyzer;
 pub mod acoustic_experience;
+pub mod acoustic_fem_pool;
+pub mod ethnic_comparator;
+pub mod era_comparator;
+pub mod ritual_acoustics;
+pub mod vr_drum_ensemble;
 pub mod alarm_mqtt;
 pub mod metrics;
 

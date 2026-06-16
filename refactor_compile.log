@@ -1,0 +1,324 @@
+﻿cargo :    Compiling bronze-drum-system v1.0.0 (D:\SOLO-2\AI_solo_coder_task_B_
+129\backend)
+所在位置 行:1 字符: 49
++ ... 9\backend ; cargo test --bin bronze-drum-server --no-run 2>&1 | Out-F ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (   Compiling br..._B_129\backend) 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+error[E0425]: cannot find type `DrumAcousticMetrics` in this scope
+   --> src\ethnic_comparator.rs:218:48
+    |
+218 |         let per_drum_metrics: BTreeMap<String, DrumAcousticMetrics> = dru
+ms
+    |                                                ^^^^^^^^^^^^^^^^^^^ not fo
+und in this scope
+    |
+help: you might be missing a type parameter
+    |
+ 12 | impl<DrumAcousticMetrics> EthnicComparator {
+    |     +++++++++++++++++++++
+
+error[E0422]: cannot find struct, variant or union type `DrumAcousticMetrics` i
+n this scope
+   --> src\ethnic_comparator.rs:246:37
+    |
+246 |                 (d.drum_id.clone(), DrumAcousticMetrics {
+    |                                     ^^^^^^^^^^^^^^^^^^^ not found in this
+ scope
+
+error[E0422]: cannot find struct, variant or union type `HistoricalReference` i
+n this scope
+   --> src\era_comparator.rs:136:25
+    |
+136 |         let reference = HistoricalReference {
+    |                         ^^^^^^^^^^^^^^^^^^^ not found in this scope
+
+warning: unused import: `mpsc`
+ --> src\mqtt_client.rs:5:30
+  |
+5 | use tokio::sync::{broadcast, mpsc};
+  |                              ^^^^
+  |
+  = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused import: `DtuEvent`
+ --> src\api.rs:5:27
+  |
+5 | use crate::dtu_receiver::{DtuEvent, DtuReceiver};
+  |                           ^^^^^^^^
+
+warning: unused import: `IntoResponse`
+  --> src\api.rs:10:16
+   |
+10 |     response::{IntoResponse, Response},
+   |                ^^^^^^^^^^^^
+
+warning: unused import: `mpsc`
+  --> src\api.rs:15:19
+   |
+15 | use tokio::sync::{mpsc, oneshot};
+   |                   ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\casting_simulator.rs:6:15
+  |
+6 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug`, `error`, and `warn`
+ --> src\acoustic_analyzer.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^  ^^^^^        ^^^^
+
+warning: unused imports: `debug` and `warn`
+ --> src\alarm_mqtt.rs:9:15
+  |
+9 | use tracing::{debug, error, info, warn};
+  |               ^^^^^               ^^^^
+
+warning: unused import: `uuid::Uuid`
+  --> src\alarm_mqtt.rs:10:5
+   |
+10 | use uuid::Uuid;
+   |     ^^^^^^^^^^
+
+warning: unused import: `chrono::Utc`
+  --> src\alarm_mqtt.rs:11:5
+   |
+11 | use chrono::Utc;
+   |     ^^^^^^^^^^^
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:24:17
+   |
+24 |                 era: "鎴樺浗-瑗挎眽".into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:31:17
+   |
+31 |                 era: "瀹?鏄?.into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:38:17
+   |
+38 |                 era: "鍞?娓?.into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:45:17
+   |
+45 |                 era: "鏄?杩戜唬".into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:52:17
+   |
+52 |                 era: "姹?杩戜唬".into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::EthnicDrumLibraryEntry` has no field named `era`
+  --> src\ethnic_comparator.rs:59:17
+   |
+59 |                 era: "杩戜唬".into(),
+   |                 ^^^ `models::EthnicDrumLibraryEntry` does not have this fi
+eld
+   |
+   = note: available fields are: `fundamental_hz`, `cultural_tag`
+
+error[E0560]: struct `models::VibrationMode` has no field named `m`
+   --> src\ethnic_comparator.rs:177:25
+    |
+177 |                         m: *m,
+    |                         ^ `models::VibrationMode` does not have this fiel
+d
+    |
+    = note: available fields are: `mode_order`, `nonlinear_frequency_hz`, `node
+_pattern`, `modal_displacements`, `effective_force_amplitude`, `arc_length_conv
+erged`
+
+error[E0560]: struct `models::VibrationMode` has no field named `n`
+   --> src\ethnic_comparator.rs:178:25
+    |
+178 |                         n: *n,
+    |                         ^ `models::VibrationMode` does not have this fiel
+d
+    |
+    = note: available fields are: `mode_order`, `nonlinear_frequency_hz`, `node
+_pattern`, `modal_displacements`, `effective_force_amplitude`, `arc_length_conv
+erged`
+
+error[E0560]: struct `models::EthnicComparisonMetrics` has no field named `spl_
+at_1m`
+   --> src\ethnic_comparator.rs:258:13
+    |
+258 |             spl_at_1m,
+    |             ^^^^^^^^^ `models::EthnicComparisonMetrics` does not have thi
+s field
+    |
+    = note: available fields are: `sound_quality_scores`, `radiated_powers`, `h
+armonic_series`, `decay_times_s`, `brightness`
+
+error[E0560]: struct `models::EthnicComparisonMetrics` has no field named `per_
+drum_metrics`
+   --> src\ethnic_comparator.rs:259:13
+    |
+259 |             per_drum_metrics,
+    |             ^^^^^^^^^^^^^^^^ `models::EthnicComparisonMetrics` does not h
+ave this field
+    |
+    = note: available fields are: `sound_quality_scores`, `radiated_powers`, `h
+armonic_series`, `decay_times_s`, `brightness`
+
+error[E0560]: struct `models::CrossEraMetrics` has no field named `ancient_soun
+d_power_w`
+   --> src\era_comparator.rs:122:13
+    |
+122 |             ancient_sound_power_w: ancient_spl,
+    |             ^^^^^^^^^^^^^^^^^^^^^ unknown field
+    |
+help: a field with a similar name exists
+    |
+122 -             ancient_sound_power_w: ancient_spl,
+122 +             ancient_radiated_power_w: ancient_spl,
+    |
+
+error[E0560]: struct `models::CrossEraMetrics` has no field named `modern_sound
+_power_w`
+   --> src\era_comparator.rs:123:13
+    |
+123 |             modern_sound_power_w: 0.5,
+    |             ^^^^^^^^^^^^^^^^^^^^ `models::CrossEraMetrics` does not have 
+this field
+    |
+    = note: available fields are: `ancient_decay_s`, `modern_decay_s`, `ancient
+_brightness`, `modern_brightness`, `ancient_radiated_power_w` ... and 2 others
+
+error[E0560]: struct `models::CrossEraMetrics` has no field named `freq_diff_hz
+`
+   --> src\era_comparator.rs:124:13
+    |
+124 |             freq_diff_hz: (modern_fund - ancient_fund).abs(),
+    |             ^^^^^^^^^^^^ `models::CrossEraMetrics` does not have this fie
+ld
+    |
+    = note: available fields are: `ancient_decay_s`, `modern_decay_s`, `ancient
+_brightness`, `modern_brightness`, `ancient_radiated_power_w` ... and 2 others
+
+error[E0560]: struct `models::CrossEraMetrics` has no field named `harmonicity_
+diff`
+   --> src\era_comparator.rs:125:13
+    |
+125 |             harmonicity_diff: 0.0,
+    |             ^^^^^^^^^^^^^^^^ `models::CrossEraMetrics` does not have this
+ field
+    |
+    = note: available fields are: `ancient_decay_s`, `modern_decay_s`, `ancient
+_brightness`, `modern_brightness`, `ancient_radiated_power_w` ... and 2 others
+
+error[E0560]: struct `models::CrossEraComparison` has no field named `historica
+l_reference`
+   --> src\era_comparator.rs:154:13
+    |
+154 |             historical_reference: reference,
+    |             ^^^^^^^^^^^^^^^^^^^^ `models::CrossEraComparison` does not ha
+ve this field
+    |
+    = note: all struct fields are already assigned
+
+error[E0560]: struct `models::RitualSceneInfo` has no field named `dominant_eth
+nic_group`
+   --> src\ritual_acoustics.rs:247:13
+    |
+247 |             dominant_ethnic_group: dominant_group,
+    |             ^^^^^^^^^^^^^^^^^^^^^ `models::RitualSceneInfo` does not have
+ this field
+    |
+    = note: available fields are: `scene_type`
+
+error[E0560]: struct `models::VirtualTapResult` has no field named `drum_id`
+  --> src\vr_drum_ensemble.rs:89:13
+   |
+89 |             drum_id: drum.drum_id.clone(),
+   |             ^^^^^^^ `models::VirtualTapResult` does not have this field
+   |
+   = note: available fields are: `timbre_character`
+
+error[E0560]: struct `models::VirtualTapResult` has no field named `drum_name`
+  --> src\vr_drum_ensemble.rs:90:13
+   |
+90 |             drum_name: drum.name.clone(),
+   |             ^^^^^^^^^ `models::VirtualTapResult` does not have this field
+   |
+   = note: available fields are: `timbre_character`
+
+error[E0560]: struct `models::VirtualTapResult` has no field named `strike_radi
+us`
+  --> src\vr_drum_ensemble.rs:92:13
+   |
+92 |             strike_radius: r_norm * a,
+   |             ^^^^^^^^^^^^^ `models::VirtualTapResult` does not have this fi
+eld
+   |
+   = note: available fields are: `timbre_character`
+
+warning: unused variable: `n`
+   --> src\acoustic_analyzer.rs:252:19
+    |
+252 |         m: usize, n: usize, lambda: f64, a: f64, grid_size: usize,
+    |                   ^ help: if this is intentional, prefix it with an under
+score: `_n`
+    |
+    = note: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by defau
+lt
+
+warning: variable `total_amp` is assigned to, but never used
+   --> src\acoustic_analyzer.rs:515:21
+    |
+515 |                 let mut total_amp = 0.0;
+    |                     ^^^^^^^^^^^^^
+    |
+    = note: consider using `_total_amp` instead
+
+warning: value assigned to `total_amp` is never read
+   --> src\acoustic_analyzer.rs:543:21
+    |
+543 |                     total_amp += amp;
+    |                     ^^^^^^^^^^^^^^^^
+    |
+    = help: maybe it is overwritten before being read?
+    = note: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by def
+ault
+
+warning: unused variable: `ac`
+   --> src\acoustic_analyzer.rs:575:9
+    |
+575 |         ac: &AcousticsConfig,
+    |         ^^ help: if this is intentional, prefix it with an underscore: `_
+ac`
+
+Some errors have detailed explanations: E0422, E0425, E0560.
+For more information about an error, try `rustc --explain E0422`.
+warning: `bronze-drum-system` (bin "bronze-drum-server" test) generated 13 warn
+ings
+error: could not compile `bronze-drum-system` (bin "bronze-drum-server" test) d
+ue to 22 previous errors; 13 warnings emitted
